@@ -55,6 +55,9 @@ To modify or adapt for a different garage:
 ### Logic Overview
 ![Logic Blocks](blocks.png)
 
+### UI Overview
+![Screenshot](Screenshot_1.jpg)
+![Screenshot](Screenshot_2.jpg)
 ---
 
 ## ⚖️ License
