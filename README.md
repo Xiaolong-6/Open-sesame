@@ -20,7 +20,7 @@ A lightweight application built with **MIT App Inventor** to automate the openin
 - **iOS (iPhone/iPad)**: You can run this on iOS! Download the `.aia` source file, upload it to [MIT App Inventor](http://ai2.appinventor.mit.edu/), and use the **MIT AI2 Companion** app from the App Store to run it, or build it using the App Inventor iOS build server.
 
 ### 📥 Installation
-1. Go to the [Releases](https://github.com/YOUR_USERNAME/YOUR_REPO/releases) section.
+1. Go to the [Releases](https://github.com/Xiaolong-6/Open-sesame/releases) section.
 2. **Android**: Download `.apk`.
 3. **iOS/Source**: Download `.aia` and import to App Inventor.
 
@@ -39,7 +39,7 @@ A lightweight application built with **MIT App Inventor** to automate the openin
 - **iOS (iPhone/iPad)**: Sovellus toimii myös iOS:llä! Lataa `.aia`-lähdetiedosto, siirrä se [MIT App Inventoriin](http://ai2.appinventor.mit.edu/) ja käytä **MIT AI2 Companion** -sovellusta (löytyy App Storesta) tai luo asennuspaketti App Inventor iOS -palvelimella.
 
 ### 📥 Asennus
-1. Mene [Releases](https://github.com/YOUR_USERNAME/YOUR_REPO/releases)-osioon.
+1. Mene [Releases](https://github.com/Xiaolong-6/Open-sesame/releases)-osioon.
 2. **Android**: Lataa `.apk`.
 3. **iOS/Lähdekoodi**: Lataa `.aia` ja tuo se App Inventoriin.
 
