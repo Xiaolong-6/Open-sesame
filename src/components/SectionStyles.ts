@@ -1,0 +1,27 @@
+import { StyleSheet } from "react-native";
+import { colors } from "../styles/theme";
+export const sectionStyles = StyleSheet.create({
+  card: { backgroundColor: colors.card, borderRadius: 24, padding: 20, marginBottom: 18, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 4 },
+  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 },
+  sectionActions: { flexDirection: "row", alignItems: "center", gap: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: "900", color: colors.text },
+  smallButton: { borderRadius: 12, backgroundColor: colors.greenSoft, paddingHorizontal: 12, paddingVertical: 8 },
+  smallButtonText: { color: colors.greenDark, fontSize: 13, fontWeight: "800" },
+  primarySmallButton: { borderRadius: 12, backgroundColor: colors.green, paddingHorizontal: 12, paddingVertical: 8 },
+  primarySmallButtonText: { color: "#FFFFFF", fontSize: 13, fontWeight: "900" },
+  activeBox: { borderRadius: 18, backgroundColor: colors.surfaceSoft, padding: 16, marginBottom: 12 },
+  activeTitle: { fontSize: 17, fontWeight: "900", color: colors.text },
+  activeSubtitle: { marginTop: 6, fontSize: 13, color: colors.muted },
+  emptyBox: { borderRadius: 18, backgroundColor: colors.warningSoft, padding: 16, marginBottom: 12 },
+  emptyText: { fontSize: 14, color: colors.warningText, fontWeight: "700" },
+  profileList: { gap: 10 },
+  profileRow: { flexDirection: "row", alignItems: "stretch", gap: 8 },
+  profileMain: { flex: 1, borderRadius: 16, borderWidth: 1, borderColor: colors.borderSoft, backgroundColor: colors.surface, padding: 12 },
+  profileMainActive: { borderColor: colors.green, backgroundColor: colors.greenSoft },
+  profileTitle: { fontSize: 15, fontWeight: "800", color: colors.text },
+  profileSubtitle: { marginTop: 4, fontSize: 12, color: colors.muted },
+  editButton: { width: 56, borderRadius: 16, backgroundColor: colors.surfaceSoft, justifyContent: "center", alignItems: "center" },
+  editButtonText: { color: "#475467", fontSize: 12, fontWeight: "900" },
+  deleteButton: { width: 72, borderRadius: 16, backgroundColor: colors.dangerSoft, justifyContent: "center", alignItems: "center" },
+  deleteButtonText: { color: colors.danger, fontSize: 12, fontWeight: "900" },
+});
