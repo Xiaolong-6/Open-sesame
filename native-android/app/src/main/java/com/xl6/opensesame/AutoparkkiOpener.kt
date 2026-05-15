@@ -85,6 +85,54 @@ class AutoparkkiOpener {
         }
     }
 
+    fun debugAccessInfo(accessUrl: String): String {
+        return try {
+            val res = request("GET", accessUrl.trim(), null, null)
+            val plain = stripHtml(res.body)
+            val form = parseForm(res.body)
+            val suggestedName = extractDoorNameFromPlainText(plain) ?: fallbackName(accessUrl)
+            val title = Regex("""<title\b[^>]*>([\s\S]*?)</title>""", RegexOption.IGNORE_CASE)
+                .find(res.body)
+                ?.groupValues
+                ?.getOrNull(1)
+                ?.let { stripHtml(it) }
+                ?.ifBlank { null }
+
+            buildString {
+                appendLine("Current door webpage info")
+                appendLine("GET status: HTTP ${res.status}")
+                appendLine("GET ok: ${if (res.okHttp) "yes" else "no"}")
+                appendLine("Final URL: ${res.finalUrl ?: accessUrl.trim()}")
+                appendLine("Suggested door name: $suggestedName")
+                if (!title.isNullOrBlank()) appendLine("Page title: $title")
+
+                if (form == null) {
+                    appendLine("Form: not found")
+                } else {
+                    appendLine("Form method: ${form.method.uppercase(Locale.ROOT)}")
+                    appendLine("Form action: ${form.action ?: "same page"}")
+                    appendLine("Form controls: ${form.controls.size}")
+
+                    val plateField = form.controls.firstOrNull { it.looksLikePlateField() }
+                        ?: form.controls.firstOrNull { it.isTextInput() }
+                    appendLine("Plate field: ${plateField?.name ?: "not found"}")
+
+                    val submit = form.controls.firstOrNull { it.isSubmit() && it.submitLooksLikeOpen() }
+                        ?: form.controls.firstOrNull { it.isSubmit() }
+                    val submitLabel = listOfNotNull(submit?.text, submit?.value).firstOrNull { it.isNotBlank() }
+                    appendLine("Submit control: ${submitLabel ?: submit?.name ?: "not found"}")
+                }
+
+                val preview = plain.take(700).ifBlank { "No readable text returned." }
+                appendLine()
+                appendLine("Readable page text preview:")
+                append(preview)
+            }
+        } catch (e: Exception) {
+            "Current door webpage info\nGET failed: ${e.message ?: "unknown error"}"
+        }
+    }
+
     private data class HttpResult(
         val status: Int,
         val finalUrl: String?,
@@ -147,7 +195,7 @@ class AutoparkkiOpener {
         conn.connectTimeout = 10000
         conn.readTimeout = 10000
         conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-        conn.setRequestProperty("User-Agent", "Open-Sesame-Native-Lite/0.1")
+        conn.setRequestProperty("User-Agent", "Open-Sesame-Native-Lite/0.3.0")
         referer?.let { conn.setRequestProperty("Referer", it) }
 
         if (cookies.isNotEmpty()) {
@@ -268,9 +316,9 @@ class AutoparkkiOpener {
         return try {
             val path = URL(accessUrl).path.split("/").filter { it.isNotBlank() }
             val token = path.lastOrNull()
-            if (!token.isNullOrBlank() && token.length >= 8) "Autoparkki ${token.take(8)}" else "Autoparkki door"
+            if (!token.isNullOrBlank() && token.length >= 8) "EuroPark (autoparkki) ${token.take(8)}" else "EuroPark (autoparkki) door"
         } catch (_: Exception) {
-            "Autoparkki door"
+            "EuroPark (autoparkki) door"
         }
     }
 }
