@@ -37,9 +37,7 @@ npx eas-cli build -p android --profile production
 
 ## Notes
 
-Open-Sesame must only be used with garage access URLs and license plates that the user is authorized to use. It does not bypass access control; the intended purpose is to automate the same authorization flow that a human would perform manually in a browser.
-
-All garage URLs and license plate profiles are stored locally on the user's device using AsyncStorage. The app does not send profile data to the developer or to any external service.
+Open-Sesame must only be used with garage access URLs and license plates that the user is authorized to use. It does not bypass access control; the intended purpose is to automate the same authorized QR/web access workflow.
 
 ## Project structure
 
@@ -51,24 +49,8 @@ eas.json
 package.json
 tsconfig.json
 .eas/workflows/create-production-builds.yml
-legacy-app-inventor/
-LICENSE
 ```
 
 ## Privacy
 
 Garage URLs and license plate profiles are stored locally on the user's device. The app does not send profile data to the developer.
-
----
-
-## Legacy App Inventor Version
-
-The original MIT App Inventor version is preserved in the `legacy-app-inventor/` folder for reference. If you need the legacy version:
-
-- `Open_the_door.aia` — MIT App Inventor source file
-- `Open_the_door.apk` — Compiled Android APK
-- Screenshots and logic diagram included
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
