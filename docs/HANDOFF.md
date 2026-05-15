@@ -2,7 +2,7 @@
 
 ## Current version
 
-2.2.0
+2.3.0
 
 ## Current app mode
 
@@ -18,6 +18,7 @@ Mock mode. The `OPEN` button calls `mockOpenDoor()` in `src/services/opener.ts`.
 - `src/services/storage.ts`: AsyncStorage access.
 - `src/services/qr.ts`: QR URL extraction and Autoparkki URL validation.
 - `src/services/opener.ts`: mock opener; target file for future real opener implementation.
+- `src/services/doorMetadata.ts`: optional access-page title fetch for default door naming.
 - `src/constants/appInfo.ts`: version, mode, subtitle, release URL, and purpose text.
 
 ## Next recommended task

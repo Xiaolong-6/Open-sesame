@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.3.0
+
+Automatic door-name suggestion release.
+
+### Added
+- `src/services/doorMetadata.ts` to infer a useful default door name from a scanned or pasted Autoparkki access URL.
+- Add-door modal now attempts to fetch the access page and use `og:title`, `<title>`, or `<h1>` as the default door name.
+- If page-title detection fails, the app falls back to a stable `Autoparkki <token>` name.
+- The automatic name is only applied while the user has not manually edited the door name.
+
+### Notes
+- Web builds may fail to fetch the title because of browser CORS rules; native Android/iOS builds should usually work.
+- This feature does not send an open-door request. It only reads the access page for naming convenience.
+
 ## 2.2.0
 
 Compact-UI release.

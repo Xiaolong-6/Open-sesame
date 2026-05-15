@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+
+import { suggestDoorNameFromAccessUrl } from "../services/doorMetadata";
 import { colors } from "../styles/theme";
 import type { GarageProfile, ModalMode, PlateProfile } from "../types/profiles";
 
@@ -22,6 +24,9 @@ export function ProfileModal(props: Props) {
   const [garageUrl, setGarageUrl] = useState("");
   const [plateLabel, setPlateLabel] = useState("");
   const [plateNumber, setPlateNumber] = useState("");
+  const [nameTouched, setNameTouched] = useState(false);
+  const [detectingName, setDetectingName] = useState(false);
+  const detectionRequestRef = useRef(0);
 
   useEffect(() => {
     if (props.modalMode === "addGarage") { setGarageName(props.defaultGarageName); setGarageUrl(props.scannedGarageUrl || ""); }
