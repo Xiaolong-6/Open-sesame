@@ -5,10 +5,12 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
-import android.view.ViewGroup
+import android.view.View
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
@@ -23,16 +25,27 @@ class MainActivity : ComponentActivity() {
     private var activeDoorId: String? = null
     private var activePlateId: String? = null
 
-    private lateinit var doorButton: Button
-    private lateinit var plateButton: Button
+    private lateinit var doorButton: TextView
+    private lateinit var plateButton: TextView
     private lateinit var statusText: TextView
     private lateinit var messageText: TextView
 
-    private val green = Color.rgb(31, 122, 90)
     private val bg = Color.rgb(244, 241, 234)
+    private val card = Color.WHITE
+    private val text = Color.rgb(31, 41, 51)
+    private val muted = Color.rgb(105, 115, 134)
+    private val green = Color.rgb(31, 122, 90)
+    private val greenSoft = Color.rgb(232, 243, 238)
+    private val danger = Color.rgb(180, 35, 24)
+    private val dangerSoft = Color.rgb(253, 232, 232)
+    private val neutralSoft = Color.rgb(242, 244, 247)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.statusBarColor = bg
+        window.navigationBarColor = bg
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+
         store = ProfileStore(this)
         reload()
         render()
@@ -45,7 +58,7 @@ class MainActivity : ComponentActivity() {
             QrScannerActivity.lastScannedText = null
             val url = extractAutoparkkiUrl(scanned)
             if (url == null) {
-                showMessage("FAILED", "Invalid QR: $scanned")
+                showMessage("FAILED", "Invalid QR content.")
             } else {
                 addDoorDialog(url)
             }
@@ -70,166 +83,203 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun render() {
-        val root = ScrollView(this).apply { setBackgroundColor(bg) }
+        val root = ScrollView(this).apply {
+            setBackgroundColor(bg)
+            clipToPadding = false
+            fitsSystemWindows = true
+        }
+
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(18), dp(20), dp(20))
+            setPadding(dp(18), dp(18), dp(18), dp(18))
         }
+
         root.addView(layout)
         setContentView(root)
 
         layout.addView(TextView(this).apply {
             text = "Open-Sesame"
-            textSize = 34f
-            setTextColor(Color.rgb(31, 41, 51))
-            setTypeface(null, android.graphics.Typeface.BOLD)
+            textSize = 32f
+            setTextColor(text)
+            setTypeface(null, Typeface.BOLD)
+            includeFontPadding = false
         })
 
         layout.addView(TextView(this).apply {
             text = "You only have to scan once"
             textSize = 15f
-            setTextColor(Color.rgb(105, 115, 134))
-            setPadding(0, dp(2), 0, dp(12))
+            setTextColor(muted)
+            includeFontPadding = false
+            setPadding(0, dp(6), 0, dp(12))
         })
 
         layout.addView(section("Step 1. Scan the door code") {
-            doorButton = mainButton(activeDoor()?.name ?: "Choose door") { chooseDoorDialog() }
+            doorButton = selectorButton(activeDoor()?.name ?: "Choose door") { chooseDoorDialog() }
             addView(doorButton)
             addView(row(
-                actionButton("Scan") { scanDoor() },
-                actionButton("Edit") { activeDoor()?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
-                dangerButton("Delete") { deleteActiveDoor() },
+                primaryAction("SCAN") { scanDoor() },
+                secondaryAction("EDIT") { activeDoor()?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
+                dangerAction("DELETE") { deleteActiveDoor() },
             ))
         })
 
         layout.addView(section("Step 2. Enter your license plate") {
-            plateButton = mainButton(activePlate()?.plateNumber ?: "Choose plate") { choosePlateDialog() }
+            plateButton = selectorButton(activePlate()?.plateNumber ?: "Choose plate") { choosePlateDialog() }
             addView(plateButton)
             addView(row(
-                actionButton("Add") { addPlateDialog(null) },
-                actionButton("Edit") { activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
-                dangerButton("Delete") { deleteActivePlate() },
+                primaryAction("ADD") { addPlateDialog(null) },
+                secondaryAction("EDIT") { activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
+                dangerAction("DELETE") { deleteActivePlate() },
             ))
         })
 
         layout.addView(section("Step 3. Open the door") {
-            val open = Button(this@MainActivity).apply {
+            addView(TextView(this@MainActivity).apply {
                 text = "OPEN"
-                textSize = 26f
+                textSize = 30f
+                gravity = Gravity.CENTER
                 setTextColor(Color.WHITE)
-                setBackgroundColor(green)
-                minHeight = dp(64)
+                setTypeface(null, Typeface.NORMAL)
+                background = rounded(green, dp(18))
+                setPadding(0, dp(16), 0, dp(16))
                 setOnClickListener { openDoor() }
-            }
-            addView(open)
+            })
         })
 
         val statusBox = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            setBackgroundColor(Color.rgb(232, 243, 238))
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = rounded(greenSoft, dp(18))
         }
 
         statusBox.addView(TextView(this).apply {
             text = "Status"
-            textSize = 12f
-            setTextColor(Color.rgb(102, 112, 133))
+            textSize = 13f
+            setTextColor(muted)
+            includeFontPadding = false
         })
 
         statusText = TextView(this).apply {
             text = "READY"
             textSize = 22f
             setTextColor(green)
-            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTypeface(null, Typeface.BOLD)
+            includeFontPadding = false
+            setPadding(0, dp(4), 0, 0)
         }
         statusBox.addView(statusText)
 
         messageText = TextView(this).apply {
             text = "Ready"
-            textSize = 13f
+            textSize = 14f
             setTextColor(Color.rgb(52, 64, 84))
+            includeFontPadding = false
+            setPadding(0, dp(6), 0, 0)
         }
         statusBox.addView(messageText)
-        layout.addView(statusBox)
 
-        layout.addView(section("Debug") {
-            addView(TextView(this@MainActivity).apply {
-                text = "Version: native-lite 0.1\\nMode: real opener prototype\\nDoors: ${doors.size}\\nPlates: ${plates.size}"
-                textSize = 13f
-            })
-            addView(row(
-                actionButton("Debug fetch") { debugFetch() },
-                actionButton("Releases") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
-                dangerButton("Clear") { clearAll() },
-            ))
+        layout.addView(statusBox, LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, 0, 0, dp(12))
         })
+
+        layout.addView(debugSection())
 
         layout.addView(TextView(this).apply {
-            text = "v0.1-native-lite. Opens authorized Autoparkki doors faster by saving scanned door QR URLs and license plates locally."
+            text = "v0.2-native-lite. Opens authorized Autoparkki doors faster by saving scanned door QR URLs and license plates locally."
             textSize = 12f
-            setTextColor(Color.rgb(105, 115, 134))
+            setTextColor(muted)
             gravity = Gravity.CENTER
-            setPadding(0, dp(12), 0, 0)
+            setPadding(dp(6), dp(10), dp(6), 0)
+            lineSpacing = dp(2).toFloat(), 1.0f
         })
+    }
+
+    private fun debugSection(): LinearLayout {
+        return section("Debug") {
+            addView(TextView(this@MainActivity).apply {
+                text = "Version: native-lite 0.2\nMode: real opener prototype\nDoors: ${doors.size}\nPlates: ${plates.size}"
+                textSize = 13f
+                setTextColor(muted)
+                setPadding(0, 0, 0, dp(8))
+            })
+
+            addView(row(
+                primaryAction("DEBUG") { debugFetch() },
+                secondaryAction("RELEASES") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
+                dangerAction("CLEAR") { clearAll() },
+            ))
+        }
     }
 
     private fun section(title: String, content: LinearLayout.() -> Unit): LinearLayout {
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(14), dp(16), dp(14))
-            setBackgroundColor(Color.WHITE)
-            val lp = LinearLayout.LayoutParams(-1, -2)
-            lp.setMargins(0, 0, 0, dp(12))
-            layoutParams = lp
+            background = rounded(card, dp(18))
+            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+                setMargins(0, 0, 0, dp(12))
+            }
 
             addView(TextView(this@MainActivity).apply {
                 text = title
-                textSize = 17f
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(Color.rgb(31, 41, 51))
-                setPadding(0, 0, 0, dp(8))
+                textSize = 18f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(text)
+                includeFontPadding = false
+                setPadding(0, 0, 0, dp(10))
             })
 
             content()
         }
     }
 
-    private fun mainButton(textValue: String, onClick: () -> Unit): Button {
-        return Button(this).apply {
-            text = textValue
-            textSize = 16f
-            setTextColor(Color.rgb(31, 41, 51))
-            setBackgroundColor(Color.rgb(232, 243, 238))
-            minHeight = dp(50)
+    private fun selectorButton(value: String, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            text = value
+            textSize = 18f
+            setTextColor(text)
+            gravity = Gravity.CENTER
+            maxLines = 1
+            background = rounded(greenSoft, dp(14))
+            setPadding(dp(12), dp(14), dp(12), dp(14))
             setOnClickListener { onClick() }
         }
     }
 
-    private fun actionButton(textValue: String, onClick: () -> Unit): Button {
-        return Button(this).apply {
-            text = textValue
-            setTextColor(Color.WHITE)
-            setBackgroundColor(green)
+    private fun primaryAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, Color.WHITE, green, onClick)
+    }
+
+    private fun secondaryAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, Color.WHITE, green, onClick)
+    }
+
+    private fun dangerAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, danger, dangerSoft, onClick)
+    }
+
+    private fun action(label: String, textColor: Int, backgroundColor: Int, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            text = label
+            textSize = 14f
+            setTypeface(null, Typeface.BOLD)
+            gravity = Gravity.CENTER
+            setTextColor(textColor)
+            background = rounded(backgroundColor, dp(14))
+            setPadding(dp(4), 0, dp(4), 0)
             setOnClickListener { onClick() }
         }
     }
 
-    private fun dangerButton(textValue: String, onClick: () -> Unit): Button {
-        return Button(this).apply {
-            text = textValue
-            setTextColor(Color.rgb(180, 35, 24))
-            setBackgroundColor(Color.rgb(253, 232, 232))
-            setOnClickListener { onClick() }
-        }
-    }
-
-    private fun row(vararg views: Button): LinearLayout {
+    private fun row(vararg views: TextView): LinearLayout {
         return LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(0, dp(8), 0, 0)
-            views.forEach {
-                addView(it, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
-                    setMargins(dp(3), 0, dp(3), 0)
+            setPadding(0, dp(10), 0, 0)
+            views.forEachIndexed { index, view ->
+                addView(view, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                    val left = if (index == 0) 0 else dp(5)
+                    val right = if (index == views.lastIndex) 0 else dp(5)
+                    setMargins(left, 0, right, 0)
                 })
             }
         }
@@ -248,19 +298,24 @@ class MainActivity : ComponentActivity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), 0, dp(12), 0)
         }
+
         val nameInput = EditText(this).apply { hint = "Door name" }
         val urlInput = EditText(this).apply {
             hint = "https://dc.autoparkki.fi/access/..."
             setText(prefillUrl ?: "")
         }
+
         container.addView(nameInput)
         container.addView(urlInput)
 
         if (!prefillUrl.isNullOrBlank()) {
+            nameInput.setText("Detecting door name...")
             Thread {
                 val suggested = opener.suggestDoorName(prefillUrl)
                 runOnUiThread {
-                    if (nameInput.text.isNullOrBlank()) nameInput.setText(suggested)
+                    if (nameInput.text.toString() == "Detecting door name...") {
+                        nameInput.setText(suggested)
+                    }
                 }
             }.start()
         }
@@ -288,8 +343,10 @@ class MainActivity : ComponentActivity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), 0, dp(12), 0)
         }
+
         val nameInput = EditText(this).apply { setText(door.name) }
         val urlInput = EditText(this).apply { setText(door.accessUrl) }
+
         container.addView(nameInput)
         container.addView(urlInput)
 
@@ -299,8 +356,10 @@ class MainActivity : ComponentActivity() {
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Save") { _, _ ->
                 doors = doors.map {
-                    if (it.id == door.id) it.copy(name = nameInput.text.toString(), accessUrl = urlInput.text.toString())
-                    else it
+                    if (it.id == door.id) it.copy(
+                        name = nameInput.text.toString(),
+                        accessUrl = urlInput.text.toString()
+                    ) else it
                 }.toMutableList()
                 store.saveDoors(doors)
                 reload()
@@ -329,7 +388,9 @@ class MainActivity : ComponentActivity() {
                     store.savePlates(plates)
                     store.setActivePlateId(p.id)
                 } else {
-                    plates = plates.map { if (it.id == existing.id) it.copy(plateNumber = plate) else it }.toMutableList()
+                    plates = plates.map {
+                        if (it.id == existing.id) it.copy(plateNumber = plate) else it
+                    }.toMutableList()
                     store.savePlates(plates)
                 }
 
@@ -344,6 +405,7 @@ class MainActivity : ComponentActivity() {
             addDoorDialog(null)
             return
         }
+
         AlertDialog.Builder(this)
             .setTitle("Choose door")
             .setItems(doors.map { it.name }.toTypedArray()) { _, which ->
@@ -359,6 +421,7 @@ class MainActivity : ComponentActivity() {
             addPlateDialog(null)
             return
         }
+
         AlertDialog.Builder(this)
             .setTitle("Choose plate")
             .setItems(plates.map { it.plateNumber }.toTypedArray()) { _, which ->
@@ -423,6 +486,7 @@ class MainActivity : ComponentActivity() {
             } catch (e: Exception) {
                 OpenResult(false, e.message ?: "Unknown error")
             }
+
             runOnUiThread {
                 showMessage(if (result.ok) "SUCCESS" else "FAILED", result.message)
             }
@@ -436,7 +500,7 @@ class MainActivity : ComponentActivity() {
             runOnUiThread {
                 AlertDialog.Builder(this)
                     .setTitle("Debug fetch")
-                    .setMessage("Door name suggestion:\\n$name\\n\\nURL:\\n${door.accessUrl}")
+                    .setMessage("Door name suggestion:\n$name\n\nURL:\n${door.accessUrl}")
                     .setPositiveButton("OK", null)
                     .show()
             }
@@ -460,17 +524,22 @@ class MainActivity : ComponentActivity() {
 
     private fun showMessage(status: String, msg: String) {
         statusText.text = status
-        statusText.setTextColor(if (status == "FAILED") Color.rgb(180, 35, 24) else green)
+        statusText.setTextColor(if (status == "FAILED") danger else green)
         messageText.text = msg
     }
 
     private fun extractAutoparkkiUrl(raw: String): String? {
         val match = Regex("https?://[^\\s\\\"'<>]+", RegexOption.IGNORE_CASE).find(raw.trim())
         val url = (match?.value ?: raw.trim())
+
         return try {
             val parsed = Uri.parse(url)
             val host = parsed.host?.lowercase() ?: return null
-            if (parsed.scheme == "https" && (host == "autoparkki.fi" || host.endsWith(".autoparkki.fi")) && parsed.path?.startsWith("/access/") == true) {
+            if (
+                parsed.scheme == "https" &&
+                (host == "autoparkki.fi" || host.endsWith(".autoparkki.fi")) &&
+                parsed.path?.startsWith("/access/") == true
+            ) {
                 url
             } else null
         } catch (_: Exception) {
@@ -480,6 +549,13 @@ class MainActivity : ComponentActivity() {
 
     private fun openUrl(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }
+
+    private fun rounded(color: Int, radius: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = radius.toFloat()
+        }
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()

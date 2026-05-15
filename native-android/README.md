@@ -1,34 +1,26 @@
-# Open-Sesame Native Lite v0.1
+# Open-Sesame Native Lite v0.2
 
 A Kotlin native Android proof-of-concept for Open-Sesame.
 
-This version is intended to test whether the Expo/React Native app can be migrated to a smaller native Android implementation.
+## v0.2 changes
 
-## Features
+- Fixed status-bar overlap.
+- Replaced square Android default buttons with rounded text-button controls.
+- Fixed debug text newlines.
+- Added AndroidX Gradle properties.
+- Set Java/Kotlin JVM target to 17.
+- Improved mobile spacing and visual hierarchy.
 
-- Add/edit/delete Autoparkki door profiles.
-- Add/edit/delete license plates.
-- QR scan using CameraX + ML Kit Barcode Scanning.
-- Local profile storage with SharedPreferences.
-- Real opener prototype using native `HttpURLConnection`.
-- Generic HTML form parser for Autoparkki access pages.
-- Debug fetch / door-name suggestion.
-- No Expo / React Native runtime.
+## Build
 
-## Expected APK size
+Open this folder in Android Studio, then run:
 
-This should be much smaller than the Expo APK, but exact size depends on CameraX and ML Kit dependencies. A no-camera variant would be smaller.
+```text
+Build → Build Bundle(s) / APK(s) → Build APK(s)
+```
 
-## Open in Android Studio
+APK output:
 
-1. Open Android Studio.
-2. File → Open.
-3. Select this folder.
-4. Let Gradle sync.
-5. Build → Build Bundle(s) / APK(s) → Build APK(s).
-
-## Notes
-
-This is an alpha-quality native migration. It is not yet as polished as the Expo version.
-
-Do not hardcode real garage URLs, license plates, cookies, or tokens into the repository.
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
