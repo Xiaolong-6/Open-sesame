@@ -38,7 +38,8 @@ class MainActivity : ComponentActivity() {
     private val greenSoft = Color.rgb(232, 243, 238)
     private val danger = Color.rgb(180, 35, 24)
     private val dangerSoft = Color.rgb(253, 232, 232)
-    private val neutralSoft = Color.rgb(242, 244, 247)
+    private val neutralSoft = Color.rgb(246, 247, 249)
+    private val borderSoft = Color.rgb(220, 226, 232)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +69,12 @@ class MainActivity : ComponentActivity() {
     private fun reload() {
         doors = store.loadDoors()
         plates = store.loadPlates()
+        if (plates.isEmpty()) {
+            val defaultPlate = PlateProfile(store.newId("plate"), "ABC-123")
+            plates.add(defaultPlate)
+            store.savePlates(plates)
+            store.setActivePlateId(defaultPlate.id)
+        }
         activeDoorId = store.getActiveDoorId()
         activePlateId = store.getActivePlateId()
 
@@ -97,43 +104,61 @@ class MainActivity : ComponentActivity() {
         root.addView(layout)
         setContentView(root)
 
-        layout.addView(TextView(this).apply {
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, 0, 0, dp(4))
+        }
+
+        header.addView(TextView(this).apply {
             text = "Open-Sesame"
             textSize = 32f
             setTextColor(textColor)
             setTypeface(null, Typeface.BOLD)
             includeFontPadding = false
-        })
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+
+        header.addView(TextView(this).apply {
+            text = "?"
+            textSize = 20f
+            setTextColor(textColor)
+            gravity = Gravity.CENTER
+            setTypeface(null, Typeface.BOLD)
+            background = roundedStroke(Color.TRANSPARENT, borderSoft, dp(24), dp(1))
+            setOnClickListener { showInstructions() }
+        }, LinearLayout.LayoutParams(dp(48), dp(48)))
+
+        layout.addView(header)
 
         layout.addView(TextView(this).apply {
-            text = "You only have to scan once"
+            text = "You only have to scan once!"
             textSize = 15f
             setTextColor(muted)
             includeFontPadding = false
-            setPadding(0, dp(6), 0, dp(12))
+            setPadding(0, dp(4), 0, dp(14))
         })
 
-        layout.addView(section("Step 1. Scan the door code") {
-            doorButton = selectorButton(activeDoor()?.name ?: "Choose door") { chooseDoorDialog() }
+        layout.addView(stepSection("Step 1", mainAction("SCAN") { scanDoor() }) {
+            doorButton = selectorButton(activeDoor()?.name ?: "Door") { chooseDoorDialog() }
             addView(doorButton)
             addView(row(
-                primaryAction("SCAN") { scanDoor() },
-                secondaryAction("EDIT") { activeDoor()?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
-                dangerAction("DELETE") { deleteActiveDoor() },
+                quietAction("EDIT") { activeDoor()?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
+                dangerQuietAction("DELETE") { deleteActiveDoor() },
             ))
         })
 
-        layout.addView(section("Step 2. Enter your license plate") {
-            plateButton = selectorButton(activePlate()?.plateNumber ?: "Choose plate") { choosePlateDialog() }
+        layout.addView(stepSection("Step 2", mainAction("ENTER") {
+            activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null)
+        }) {
+            plateButton = selectorButton(activePlate()?.plateNumber ?: "ABC-123") { choosePlateDialog() }
             addView(plateButton)
             addView(row(
-                primaryAction("ADD") { addPlateDialog(null) },
-                secondaryAction("EDIT") { activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
-                dangerAction("DELETE") { deleteActivePlate() },
+                quietAction("EDIT") { activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
+                dangerQuietAction("DELETE") { deleteActivePlate() },
             ))
         })
 
-        layout.addView(section("Step 3. Open the door") {
+        layout.addView(section("Step 3") {
             addView(TextView(this@MainActivity).apply {
                 text = "OPEN"
                 textSize = 30f
@@ -141,7 +166,7 @@ class MainActivity : ComponentActivity() {
                 setTextColor(Color.WHITE)
                 setTypeface(null, Typeface.NORMAL)
                 background = rounded(green, dp(18))
-                setPadding(0, dp(16), 0, dp(16))
+                setPadding(0, dp(18), 0, dp(18))
                 setOnClickListener { openDoor() }
             })
         })
@@ -185,7 +210,7 @@ class MainActivity : ComponentActivity() {
         layout.addView(debugSection())
 
         layout.addView(TextView(this).apply {
-            text = "v0.2-native-lite. Opens authorized Autoparkki doors faster by saving scanned door QR URLs and license plates locally."
+            text = "v0.3.0-native-lite. Opens authorized EuroPark (autoparkki) doors faster by saving scanned door QR URLs and license plates locally."
             textSize = 12f
             setTextColor(muted)
             gravity = Gravity.CENTER
@@ -196,17 +221,10 @@ class MainActivity : ComponentActivity() {
 
     private fun debugSection(): LinearLayout {
         return section("Debug") {
-            addView(TextView(this@MainActivity).apply {
-                text = "Version: native-lite 0.2\nMode: real opener prototype\nDoors: ${doors.size}\nPlates: ${plates.size}"
-                textSize = 13f
-                setTextColor(muted)
-                setPadding(0, 0, 0, dp(8))
-            })
-
             addView(row(
-                primaryAction("DEBUG") { debugFetch() },
-                secondaryAction("RELEASES") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
-                dangerAction("CLEAR") { clearAll() },
+                quietAction("DEBUG") { debugFetch() },
+                quietAction("UPDATE") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
+                dangerQuietAction("CLEAR") { clearAll() },
             ))
         }
     }
@@ -233,6 +251,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun stepSection(title: String, actionView: TextView, content: LinearLayout.() -> Unit): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(14), dp(16), dp(14))
+            background = rounded(card, dp(18))
+            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+                setMargins(0, 0, 0, dp(12))
+            }
+
+            val titleRow = LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, 0, 0, dp(12))
+            }
+
+            titleRow.addView(TextView(this@MainActivity).apply {
+                text = title
+                textSize = 22f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(textColor)
+                includeFontPadding = false
+            }, LinearLayout.LayoutParams(0, -2, 1f))
+
+            titleRow.addView(actionView, LinearLayout.LayoutParams(dp(112), dp(54)))
+            addView(titleRow)
+
+            content()
+        }
+    }
+
     private fun selectorButton(value: String, onClick: () -> Unit): TextView {
         return TextView(this).apply {
             text = value
@@ -246,26 +294,48 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun mainAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, Color.WHITE, green, onClick, true)
+    }
+
     private fun primaryAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, Color.WHITE, green, onClick)
+        return action(label, Color.WHITE, green, onClick, true)
     }
 
     private fun secondaryAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, Color.WHITE, green, onClick)
+        return quietAction(label, onClick)
     }
 
     private fun dangerAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, danger, dangerSoft, onClick)
+        return dangerQuietAction(label, onClick)
     }
 
-    private fun action(label: String, textColor: Int, backgroundColor: Int, onClick: () -> Unit): TextView {
+    private fun quietAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, muted, neutralSoft, onClick, false)
+    }
+
+    private fun dangerQuietAction(label: String, onClick: () -> Unit): TextView {
+        return action(label, danger, dangerSoft, onClick, false)
+    }
+
+    private fun action(
+        label: String,
+        textColor: Int,
+        backgroundColor: Int,
+        onClick: () -> Unit,
+        strong: Boolean
+    ): TextView {
         return TextView(this).apply {
             text = label
-            textSize = 14f
+            textSize = if (strong) 16f else 14f
             setTypeface(null, Typeface.BOLD)
             gravity = Gravity.CENTER
             setTextColor(textColor)
-            background = rounded(backgroundColor, dp(14))
+            background = if (strong) {
+                rounded(backgroundColor, dp(14))
+            } else {
+                roundedStroke(backgroundColor, borderSoft, dp(14), dp(1))
+            }
             setPadding(dp(4), 0, dp(4), 0)
             setOnClickListener { onClick() }
         }
@@ -326,7 +396,7 @@ class MainActivity : ComponentActivity() {
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Save") { _, _ ->
                 val url = urlInput.text.toString().trim()
-                val name = nameInput.text.toString().trim().ifBlank { "Autoparkki door" }
+                val name = nameInput.text.toString().trim().ifBlank { "EuroPark (autoparkki) door" }
                 val profile = DoorProfile(store.newId("door"), name, url)
                 doors.add(profile)
                 store.saveDoors(doors)
@@ -493,14 +563,49 @@ class MainActivity : ComponentActivity() {
         }.start()
     }
 
+    private fun showInstructions() {
+        AlertDialog.Builder(this)
+            .setTitle("EuroPark (autoparkki) quick opener")
+            .setMessage(
+                "Save an authorized EuroPark (autoparkki) door QR URL and license plate locally, then reuse them for faster opening requests.\n\n" +
+                    "This app only sends the web request. It does not physically verify whether the door opened."
+            )
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
     private fun debugFetch() {
-        val door = activeDoor() ?: return
+        val door = activeDoor()
+        val baseInfo = buildString {
+            appendLine("Version: 0.3.0-native-lite")
+            appendLine("Mode: real opener")
+            appendLine("Doors: ${doors.size}")
+            appendLine("Plates: ${plates.size}")
+            appendLine("Operator: EuroPark")
+            appendLine("Legacy page handler: autoparkki")
+        }
+
+        if (door == null) {
+            AlertDialog.Builder(this)
+                .setTitle("Debug")
+                .setMessage(baseInfo + "\nCurrent door: none selected.\nTap SCAN to add a EuroPark (autoparkki) door first.")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Debug")
+            .setMessage(baseInfo + "\nCurrent door: ${door.name}\nFetching current door webpage info...")
+            .setPositiveButton("OK", null)
+            .show()
+
         Thread {
-            val name = opener.suggestDoorName(door.accessUrl)
+            val pageInfo = opener.debugAccessInfo(door.accessUrl)
             runOnUiThread {
                 AlertDialog.Builder(this)
-                    .setTitle("Debug fetch")
-                    .setMessage("Door name suggestion:\n$name\n\nURL:\n${door.accessUrl}")
+                    .setTitle("Debug")
+                    .setMessage(baseInfo + "\nCurrent door: ${door.name}\n\n" + pageInfo)
                     .setPositiveButton("OK", null)
                     .show()
             }
@@ -555,6 +660,14 @@ class MainActivity : ComponentActivity() {
         return GradientDrawable().apply {
             setColor(color)
             cornerRadius = radius.toFloat()
+        }
+    }
+
+    private fun roundedStroke(color: Int, strokeColor: Int, radius: Int, strokeWidth: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = radius.toFloat()
+            setStroke(strokeWidth, strokeColor)
         }
     }
 
