@@ -16,4 +16,12 @@ export type PlateProfile = {
   lastUsedAt?: string;
 };
 
-export type ModalMode = "none" | "addGarage" | "editGarage" | "addPlate" | "editPlate" | "scanGarage";
+export type ModalMode =
+  | "none"
+  | "addGarage"
+  | "editGarage"
+  | "addPlate"
+  | "editPlate"
+  | "scanGarage";
+
+export type PickerMode = "none" | "garage" | "plate";

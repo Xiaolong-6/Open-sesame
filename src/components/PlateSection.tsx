@@ -2,7 +2,60 @@ import { Pressable, Text, View } from "react-native";
 import { sectionStyles as styles } from "./SectionStyles";
 import type { PlateProfile } from "../types/profiles";
 
-type Props = { plateProfiles: PlateProfile[]; activePlateId?: string; activePlate?: PlateProfile; onSelect: (id: string) => void; onAdd: () => void; onEdit: (profile: PlateProfile) => void; onDelete: (id: string) => void; };
-export function PlateSection({ plateProfiles, activePlateId, activePlate, onSelect, onAdd, onEdit, onDelete }: Props) {
-  return <View style={styles.card}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>License plate</Text><Pressable style={styles.smallButton} onPress={onAdd}><Text style={styles.smallButtonText}>Add plate</Text></Pressable></View>{activePlate ? <View style={styles.activeBox}><Text style={styles.activeTitle}>{activePlate.label} · {activePlate.plateNumber}</Text></View> : <View style={styles.emptyBox}><Text style={styles.emptyText}>No plate saved yet.</Text></View>}<View style={styles.profileList}>{plateProfiles.map((plate) => <View key={plate.id} style={styles.profileRow}><Pressable style={[styles.profileMain, plate.id === activePlateId ? styles.profileMainActive : null]} onPress={() => onSelect(plate.id)}><Text style={styles.profileTitle}>{plate.label} · {plate.plateNumber}</Text></Pressable><Pressable style={styles.editButton} onPress={() => onEdit(plate)}><Text style={styles.editButtonText}>Edit</Text></Pressable><Pressable style={styles.deleteButton} onPress={() => onDelete(plate.id)}><Text style={styles.deleteButtonText}>Delete</Text></Pressable></View>)}</View></View>;
+type Props = {
+  activePlate?: PlateProfile;
+  onOpenPicker: () => void;
+  onAdd: () => void;
+  onEditActive: () => void;
+  onDeleteActive: () => void;
+};
+
+export function PlateSection({
+  activePlate,
+  onOpenPicker,
+  onAdd,
+  onEditActive,
+  onDeleteActive,
+}: Props) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Step 2. Enter your license plate</Text>
+        <Text style={styles.sectionSubtitle}>
+          Save one or more plates and choose the one you are using now.
+        </Text>
+      </View>
+
+      <View style={styles.actionRow}>
+        <Pressable
+          style={[
+            styles.compactMainButton,
+            activePlate ? null : styles.emptyMainButton,
+          ]}
+          onPress={onOpenPicker}
+        >
+          <Text style={styles.compactMainTitle}>
+            {activePlate
+              ? `${activePlate.label} · ${activePlate.plateNumber}`
+              : "Choose plate"}
+          </Text>
+          <Text style={styles.compactMainSubtitle}>
+            {activePlate ? "Tap to choose another saved plate" : "No plate selected"}
+          </Text>
+        </Pressable>
+
+        <Pressable style={styles.primaryButton} onPress={onAdd}>
+          <Text style={styles.primaryButtonText}>Add</Text>
+        </Pressable>
+
+        <Pressable style={styles.smallButton} onPress={activePlate ? onEditActive : onAdd}>
+          <Text style={styles.smallButtonText}>Edit</Text>
+        </Pressable>
+
+        <Pressable style={styles.dangerButton} onPress={onDeleteActive}>
+          <Text style={styles.dangerButtonText}>Delete</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
 }

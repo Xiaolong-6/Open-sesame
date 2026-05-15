@@ -2,7 +2,60 @@ import { Pressable, Text, View } from "react-native";
 import { sectionStyles as styles } from "./SectionStyles";
 import type { GarageProfile } from "../types/profiles";
 
-type Props = { garageProfiles: GarageProfile[]; activeGarageId?: string; activeGarage?: GarageProfile; onSelect: (id: string) => void; onAdd: () => void; onScan: () => void; onEdit: (profile: GarageProfile) => void; onDelete: (id: string) => void; };
-export function DoorSection({ garageProfiles, activeGarageId, activeGarage, onSelect, onAdd, onScan, onEdit, onDelete }: Props) {
-  return <View style={styles.card}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Current door</Text><View style={styles.sectionActions}><Pressable style={styles.primarySmallButton} onPress={onScan}><Text style={styles.primarySmallButtonText}>Scan</Text></Pressable><Pressable style={styles.smallButton} onPress={onAdd}><Text style={styles.smallButtonText}>Add door</Text></Pressable></View></View>{activeGarage ? <View style={styles.activeBox}><Text style={styles.activeTitle}>{activeGarage.name}</Text><Text style={styles.activeSubtitle} numberOfLines={1}>{activeGarage.accessUrl}</Text></View> : <View style={styles.emptyBox}><Text style={styles.emptyText}>No door saved yet.</Text></View>}<View style={styles.profileList}>{garageProfiles.map((garage) => <View key={garage.id} style={styles.profileRow}><Pressable style={[styles.profileMain, garage.id === activeGarageId ? styles.profileMainActive : null]} onPress={() => onSelect(garage.id)}><Text style={styles.profileTitle}>{garage.name}</Text><Text style={styles.profileSubtitle} numberOfLines={1}>{garage.accessUrl}</Text></Pressable><Pressable style={styles.editButton} onPress={() => onEdit(garage)}><Text style={styles.editButtonText}>Edit</Text></Pressable><Pressable style={styles.deleteButton} onPress={() => onDelete(garage.id)}><Text style={styles.deleteButtonText}>Delete</Text></Pressable></View>)}</View></View>;
+type Props = {
+  activeGarage?: GarageProfile;
+  onOpenPicker: () => void;
+  onScan: () => void;
+  onAdd: () => void;
+  onEditActive: () => void;
+  onDeleteActive: () => void;
+};
+
+export function DoorSection({
+  activeGarage,
+  onOpenPicker,
+  onScan,
+  onAdd,
+  onEditActive,
+  onDeleteActive,
+}: Props) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Step 1. Scan the door code</Text>
+        <Text style={styles.sectionSubtitle}>
+          Scan once, then choose the saved door from the button below.
+        </Text>
+      </View>
+
+      <View style={styles.actionRow}>
+        <Pressable
+          style={[
+            styles.compactMainButton,
+            activeGarage ? null : styles.emptyMainButton,
+          ]}
+          onPress={onOpenPicker}
+        >
+          <Text style={styles.compactMainTitle}>
+            {activeGarage ? activeGarage.name : "Choose door"}
+          </Text>
+          <Text style={styles.compactMainSubtitle} numberOfLines={1}>
+            {activeGarage ? activeGarage.accessUrl : "No door selected"}
+          </Text>
+        </Pressable>
+
+        <Pressable style={styles.primaryButton} onPress={onScan}>
+          <Text style={styles.primaryButtonText}>Scan</Text>
+        </Pressable>
+
+        <Pressable style={styles.smallButton} onPress={activeGarage ? onEditActive : onAdd}>
+          <Text style={styles.smallButtonText}>Edit</Text>
+        </Pressable>
+
+        <Pressable style={styles.dangerButton} onPress={onDeleteActive}>
+          <Text style={styles.dangerButtonText}>Delete</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
 }
