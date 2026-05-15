@@ -26,7 +26,7 @@ export function PlateSection({
         </Text>
       </View>
 
-      <View style={styles.actionRow}>
+      <View style={styles.mainRow}>
         <Pressable
           style={[
             styles.compactMainButton,
@@ -34,16 +34,16 @@ export function PlateSection({
           ]}
           onPress={onOpenPicker}
         >
-          <Text style={styles.compactMainTitle}>
-            {activePlate
-              ? `${activePlate.label} · ${activePlate.plateNumber}`
-              : "Choose plate"}
+          <Text style={styles.compactMainTitle} numberOfLines={1}>
+            {activePlate ? activePlate.plateNumber : "Choose plate"}
           </Text>
           <Text style={styles.compactMainSubtitle}>
             {activePlate ? "Tap to choose another saved plate" : "No plate selected"}
           </Text>
         </Pressable>
+      </View>
 
+      <View style={styles.buttonRow}>
         <Pressable style={styles.primaryButton} onPress={onAdd}>
           <Text style={styles.primaryButtonText}>Add</Text>
         </Pressable>

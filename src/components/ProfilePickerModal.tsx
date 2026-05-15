@@ -74,9 +74,7 @@ export function ProfilePickerModal({
                     onClose();
                   }}
                 >
-                  <Text style={styles.optionTitle}>
-                    {plate.label} · {plate.plateNumber}
-                  </Text>
+                  <Text style={styles.optionTitle}>{plate.plateNumber}</Text>
                 </Pressable>
               ))
             : null}

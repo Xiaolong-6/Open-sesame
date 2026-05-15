@@ -29,7 +29,7 @@ export function DebugPanel({
       <Text style={styles.line}>Saved plates: {plateProfiles.length}</Text>
       <Text style={styles.line}>Active door: {activeGarage?.name || "none"}</Text>
       <Text style={styles.line}>
-        Active plate: {activePlate ? `${activePlate.label} · ${activePlate.plateNumber}` : "none"}
+        Active plate: {activePlate ? activePlate.plateNumber : "none"}
       </Text>
 
       <Pressable style={styles.debugFetchButton} onPress={onDebugFetch}>

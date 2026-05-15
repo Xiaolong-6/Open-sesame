@@ -18,18 +18,41 @@ function extractTitleFromHtml(html: string) {
     /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["'][^>]*>/i
   );
 
-  if (ogTitle?.[1]) {
-    return stripHtml(ogTitle[1]);
-  }
+  if (ogTitle?.[1]) return stripHtml(ogTitle[1]);
 
   const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-  if (title?.[1]) {
-    return stripHtml(title[1]);
-  }
+  if (title?.[1]) return stripHtml(title[1]);
 
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  if (h1?.[1]) {
-    return stripHtml(h1[1]);
+  if (h1?.[1]) return stripHtml(h1[1]);
+
+  return undefined;
+}
+
+function extractLocationFromPlainText(plainText: string, title?: string) {
+  let text = plainText.replace(/\s+/g, " ").trim();
+
+  if (title) {
+    text = text.replace(title, "").trim();
+  }
+
+  // Autoparkki access pages commonly contain:
+  // "P-Luoteisrinne Finnoonsilta Syötä rekisterinumerosi Avaa ovi ..."
+  const beforePlatePrompt = text.split(/Syötä rekisterinumerosi/i)[0]?.trim();
+  if (beforePlatePrompt && beforePlatePrompt.length >= 3) {
+    const cleaned = beforePlatePrompt
+      .replace(/^[-–—|\s]+/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (cleaned.length >= 3 && cleaned.length <= 80) {
+      return cleaned;
+    }
+  }
+
+  const parkingName = text.match(/\bP-[A-Za-zÅÄÖåäö0-9][A-Za-zÅÄÖåäö0-9\- ]{2,80}/);
+  if (parkingName?.[0]) {
+    return parkingName[0].trim();
   }
 
   return undefined;
@@ -67,19 +90,20 @@ export async function suggestDoorNameFromAccessUrl(accessUrl: string) {
 
     const html = await response.text();
     const title = extractTitleFromHtml(html);
+    const plainText = stripHtml(html);
+    const locationName = extractLocationFromPlainText(plainText, title);
+
+    if (locationName) {
+      return locationName;
+    }
 
     if (title) {
-      // Remove generic browser/app words while keeping location-specific text.
       const cleaned = title
         .replace(/\s*[-|–—]\s*Autoparkki\s*$/i, "")
         .replace(/^Autoparkki\s*[-|–—]\s*/i, "")
         .trim();
 
-      if (cleaned.length >= 3) {
-        return cleaned;
-      }
-
-      return title;
+      return cleaned.length >= 3 ? cleaned : title;
     }
   } catch {
     // Web builds may fail here because of CORS. Native builds should usually work.

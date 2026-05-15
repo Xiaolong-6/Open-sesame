@@ -28,7 +28,7 @@ export function DoorSection({
         </Text>
       </View>
 
-      <View style={styles.actionRow}>
+      <View style={styles.mainRow}>
         <Pressable
           style={[
             styles.compactMainButton,
@@ -36,14 +36,16 @@ export function DoorSection({
           ]}
           onPress={onOpenPicker}
         >
-          <Text style={styles.compactMainTitle}>
+          <Text style={styles.compactMainTitle} numberOfLines={1}>
             {activeGarage ? activeGarage.name : "Choose door"}
           </Text>
           <Text style={styles.compactMainSubtitle} numberOfLines={1}>
             {activeGarage ? activeGarage.accessUrl : "No door selected"}
           </Text>
         </Pressable>
+      </View>
 
+      <View style={styles.buttonRow}>
         <Pressable style={styles.primaryButton} onPress={onScan}>
           <Text style={styles.primaryButtonText}>Scan</Text>
         </Pressable>

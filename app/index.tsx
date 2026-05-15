@@ -189,7 +189,7 @@ export default function HomeScreen() {
     }
     confirmAction(
       "Delete plate?",
-      `Delete "${profiles.activePlate.label} · ${profiles.activePlate.plateNumber}" from this device?`,
+      `Delete "${profiles.activePlate.plateNumber}" from this device?`,
       () => profiles.deletePlateProfile(profiles.activePlate!.id)
     );
   }

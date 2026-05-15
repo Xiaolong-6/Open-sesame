@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.5.0
+
+Mobile UI and metadata-fix release.
+
+### Added
+- Better door-name extraction from Autoparkki access pages.
+- Location text such as `P-Luoteisrinne Finnoonsilta` is preferred over generic titles such as `EuroPark Finland - ADC`.
+
+### Changed
+- Step 1 and Step 2 now use a two-row mobile layout:
+  - Row 1: current door/plate selector.
+  - Row 2: action buttons.
+- License plates no longer require a separate nickname/label; the plate number is the displayed profile name.
+- Picker modal and debug panel show only the plate number for plate profiles.
+
 ## 2.4.0
 
 Debug fetch release.

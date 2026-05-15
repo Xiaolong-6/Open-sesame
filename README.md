@@ -1,10 +1,10 @@
-# 🚗 Open-Sesame 2.4
+# 🚗 Open-Sesame 2.5
 
 Open-Sesame is an Expo / React Native app for authorized Autoparkki carport access.
 
 ## Current status
 
-Version 2.4 adds a debug fetch mode for inspecting the selected Autoparkki access page without opening the door.
+Version 2.5 fixes the compact mobile layout, removes separate plate labels, and improves door-name detection from Autoparkki access pages.
 
 Current features:
 
@@ -12,6 +12,9 @@ Current features:
   - Step 1. Scan the door code
   - Step 2. Enter your license plate
   - Step 3. Open the door
+- Two-row compact mobile layout: current profile button on one row, actions on a second row.
+- License plates no longer require a separate nickname/label.
+- Improved automatic door-name suggestion: prefers location text such as parking-area/street name over generic page title.
 - Debug fetch mode for the active door: GET the access page, show HTTP status, final URL, detected title, and page text snippet.
 - Automatic default door-name suggestion from the access page title, with URL-token fallback.
 - Compact current-door selector with edit/delete controls.
