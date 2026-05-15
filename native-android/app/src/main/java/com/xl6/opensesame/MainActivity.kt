@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
     private val bg = Color.rgb(244, 241, 234)
     private val card = Color.WHITE
-    private val text = Color.rgb(31, 41, 51)
+    private val textColor = Color.rgb(31, 41, 51)
     private val muted = Color.rgb(105, 115, 134)
     private val green = Color.rgb(31, 122, 90)
     private val greenSoft = Color.rgb(232, 243, 238)
@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
         layout.addView(TextView(this).apply {
             text = "Open-Sesame"
             textSize = 32f
-            setTextColor(text)
+            setTextColor(textColor)
             setTypeface(null, Typeface.BOLD)
             includeFontPadding = false
         })
@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
             setTextColor(muted)
             gravity = Gravity.CENTER
             setPadding(dp(6), dp(10), dp(6), 0)
-            lineSpacing = dp(2).toFloat(), 1.0f
+            setLineSpacing(dp(2).toFloat(), 1.0f)
         })
     }
 
@@ -224,7 +224,7 @@ class MainActivity : ComponentActivity() {
                 text = title
                 textSize = 18f
                 setTypeface(null, Typeface.BOLD)
-                setTextColor(text)
+                setTextColor(textColor)
                 includeFontPadding = false
                 setPadding(0, 0, 0, dp(10))
             })
@@ -237,7 +237,7 @@ class MainActivity : ComponentActivity() {
         return TextView(this).apply {
             text = value
             textSize = 18f
-            setTextColor(text)
+            setTextColor(textColor)
             gravity = Gravity.CENTER
             maxLines = 1
             background = rounded(greenSoft, dp(14))

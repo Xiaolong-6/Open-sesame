@@ -1,6 +1,11 @@
-# Open-Sesame Native Lite v0.2
+# Open-Sesame Native Lite v0.2.1
 
 A Kotlin native Android proof-of-concept for Open-Sesame.
+
+## v0.2.1 changes
+
+- Fixed Kotlin compile errors from `TextView.text` shadowing the `text` color field.
+- Replaced invalid `lineSpacing = ...` assignment with `setLineSpacing(...)`.
 
 ## v0.2 changes
 
