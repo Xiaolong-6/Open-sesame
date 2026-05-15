@@ -2,7 +2,7 @@
 
 Open-Sesame AndroidNative Lite is a small native Kotlin Android app for faster reuse of authorized **EuroPark (autoparkki)** door QR access pages in Finland.
 
-The active Android project now lives at the repository root. Earlier Expo / React Native files are archived under `archive/expo-react-native/` for historical reference.
+The active Android project now lives at the repository root. Earlier Expo / React Native files are archived under `archive/expo-react-native/`, and the original MIT App Inventor version is archived under `archive/legacy-app-inventor/` for historical reference.
 
 ## Current version
 
@@ -21,7 +21,7 @@ build.gradle.kts             Root Gradle build file
 settings.gradle.kts          Gradle project settings
 gradle.properties            AndroidX / Gradle / Kotlin settings
 archive/expo-react-native/   Archived Expo / React Native implementation
-legacy-app-inventor/         Legacy App Inventor material, if present
+archive/legacy-app-inventor/ Archived MIT App Inventor implementation
 ```
 
 ## For users
@@ -118,6 +118,7 @@ User-facing changes:
 - Changed the QR scanner title to `Scan EuroPark (autoparkki) QR`.
 - Moved the active Android Gradle project from `native-android/` to the repository root.
 - Archived the earlier Expo / React Native implementation under `archive/expo-react-native/`.
+- Archived the original MIT App Inventor implementation under `archive/legacy-app-inventor/`.
 
 Developer-facing changes:
 
