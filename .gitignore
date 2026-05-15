@@ -1,0 +1,24 @@
+# Expo
+.expo/
+.expo-shared/
+dist/
+
+# Node
+node_modules/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets & Environment
+.env
+.env.local
+.env.*.local
