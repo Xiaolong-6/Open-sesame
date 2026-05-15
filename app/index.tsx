@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 
+import { DebugFetchModal } from "../src/components/DebugFetchModal";
 import { DebugPanel } from "../src/components/DebugPanel";
 import { DoorSection } from "../src/components/DoorSection";
 import { PlateSection } from "../src/components/PlateSection";
@@ -21,6 +22,10 @@ import { ScanGarageModal } from "../src/components/ScanGarageModal";
 import { StatusCard } from "../src/components/StatusCard";
 import { APP_INFO } from "../src/constants/appInfo";
 import { useOpenSesameProfiles } from "../src/hooks/useOpenSesameProfiles";
+import {
+  debugFetchAccessPage,
+  type DebugFetchResult,
+} from "../src/services/debugFetch";
 import { mockOpenDoor } from "../src/services/opener";
 import { extractAutoparkkiUrlFromQr } from "../src/services/qr";
 import { colors } from "../src/styles/theme";
@@ -52,6 +57,9 @@ export default function HomeScreen() {
   const [editingPlate, setEditingPlate] = useState<PlateProfile | undefined>();
   const [scannedGarageUrl, setScannedGarageUrl] = useState<string | undefined>();
   const [scanLocked, setScanLocked] = useState(false);
+  const [debugFetchVisible, setDebugFetchVisible] = useState(false);
+  const [debugFetchLoading, setDebugFetchLoading] = useState(false);
+  const [debugFetchResult, setDebugFetchResult] = useState<DebugFetchResult | undefined>();
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
   function closeModal() {
@@ -101,6 +109,23 @@ export default function HomeScreen() {
     profiles.setStatus("ready");
     profiles.setMessage("QR scanned. Name this door and save it.");
     setModalMode("addGarage");
+  }
+
+  async function runDebugFetch() {
+    if (!profiles.activeGarage) {
+      Alert.alert("No door selected", "Select a saved door before running debug fetch.");
+      return;
+    }
+
+    setDebugFetchVisible(true);
+    setDebugFetchLoading(true);
+
+    try {
+      const result = await debugFetchAccessPage(profiles.activeGarage.accessUrl);
+      setDebugFetchResult(result);
+    } finally {
+      setDebugFetchLoading(false);
+    }
   }
 
   async function handleOpenDoor() {
@@ -225,6 +250,7 @@ export default function HomeScreen() {
             plateProfiles={profiles.plateProfiles}
             activeGarage={profiles.activeGarage}
             activePlate={profiles.activePlate}
+            onDebugFetch={runDebugFetch}
             onClearAll={() =>
               confirmAction(
                 "Clear all local profiles?",
@@ -311,6 +337,14 @@ export default function HomeScreen() {
           onBarcodeScanned={handleBarcodeScanned}
           onClose={closeModal}
           onScanAgain={() => setScanLocked(false)}
+        />
+
+        <DebugFetchModal
+          visible={debugFetchVisible}
+          loading={debugFetchLoading}
+          result={debugFetchResult}
+          onClose={() => setDebugFetchVisible(false)}
+          onRunAgain={runDebugFetch}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

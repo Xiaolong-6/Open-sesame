@@ -2,7 +2,7 @@
 
 ## Current version
 
-2.3.0
+2.4.0
 
 ## Current app mode
 
@@ -19,11 +19,13 @@ Mock mode. The `OPEN` button calls `mockOpenDoor()` in `src/services/opener.ts`.
 - `src/services/qr.ts`: QR URL extraction and Autoparkki URL validation.
 - `src/services/opener.ts`: mock opener; target file for future real opener implementation.
 - `src/services/doorMetadata.ts`: optional access-page title fetch for default door naming.
+- `src/services/debugFetch.ts`: GET-only debug fetch for inspecting selected access pages.
+- `src/components/DebugFetchModal.tsx`: displays debug fetch result.
 - `src/constants/appInfo.ts`: version, mode, subtitle, release URL, and purpose text.
 
 ## Next recommended task
 
-Implement a debug-only real request prototype in `src/services/opener.ts`:
+Use debug fetch output to inspect the real Autoparkki page. Then implement a debug-only real request prototype in `src/services/opener.ts`:
 
 1. GET `garage.accessUrl`.
 2. Capture cookies/session.

@@ -9,6 +9,7 @@ type Props = {
   activeGarage?: GarageProfile;
   activePlate?: PlateProfile;
   onClearAll: () => void;
+  onDebugFetch: () => void;
 };
 
 export function DebugPanel({
@@ -17,6 +18,7 @@ export function DebugPanel({
   activeGarage,
   activePlate,
   onClearAll,
+  onDebugFetch,
 }: Props) {
   return (
     <View style={styles.card}>
@@ -29,6 +31,10 @@ export function DebugPanel({
       <Text style={styles.line}>
         Active plate: {activePlate ? `${activePlate.label} · ${activePlate.plateNumber}` : "none"}
       </Text>
+
+      <Pressable style={styles.debugFetchButton} onPress={onDebugFetch}>
+        <Text style={styles.debugFetchButtonText}>Debug fetch active door</Text>
+      </Pressable>
 
       <Pressable style={styles.releaseButton} onPress={() => Linking.openURL(APP_INFO.releaseUrl)}>
         <Text style={styles.releaseButtonText}>Check releases manually</Text>
@@ -59,8 +65,19 @@ const styles = StyleSheet.create({
     color: colors.muted,
     marginTop: 4,
   },
-  releaseButton: {
+  debugFetchButton: {
     marginTop: 14,
+    borderRadius: 14,
+    backgroundColor: colors.openingSoft,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  debugFetchButtonText: {
+    color: "#344054",
+    fontWeight: "900",
+  },
+  releaseButton: {
+    marginTop: 10,
     borderRadius: 14,
     backgroundColor: colors.greenSoft,
     paddingVertical: 12,

@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.4.0
+
+Debug fetch release.
+
+### Added
+- `src/services/debugFetch.ts` for safe GET-only inspection of the selected door access URL.
+- `src/components/DebugFetchModal.tsx` to display debug fetch output.
+- Debug panel button: `Debug fetch active door`.
+
+### Debug fetch output
+- Requested URL
+- Final URL after redirects
+- HTTP status and status text
+- Content-Type
+- Detected title
+- Text snippet from the returned page
+- Error message, if fetch fails
+
+### Safety note
+- Debug fetch only performs a GET request.
+- It does not submit the license plate.
+- It does not send an open-door request.
+
 ## 2.3.0
 
 Automatic door-name suggestion release.
