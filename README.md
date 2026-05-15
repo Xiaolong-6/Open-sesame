@@ -4,6 +4,12 @@ Open-Sesame AndroidNative Lite is a small native Kotlin Android app for faster r
 
 The active Android project now lives at the repository root. Earlier Expo / React Native files are archived under `archive/expo-react-native/`, and the original MIT App Inventor version is archived under `archive/legacy-app-inventor/` for historical reference.
 
+## Screenshot
+
+<p align="left">
+  <img src="docs/images/open-sesame-v0.3.0-native-lite-screenshot.jpg" alt="Open-Sesame v0.3.0-native-lite Android screenshot" width="280">
+</p>
+
 ## Current version
 
 - App version: `0.3.0-native-lite`
@@ -119,6 +125,7 @@ User-facing changes:
 - Moved the active Android Gradle project from `native-android/` to the repository root.
 - Archived the earlier Expo / React Native implementation under `archive/expo-react-native/`.
 - Archived the original MIT App Inventor implementation under `archive/legacy-app-inventor/`.
+- Added a controlled-size v0.3.0 screenshot to the README.
 
 Developer-facing changes:
 
