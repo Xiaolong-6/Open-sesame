@@ -26,6 +26,7 @@ import {
   debugFetchAccessPage,
   type DebugFetchResult,
 } from "../src/services/debugFetch";
+import { suggestDoorNameFromAccessUrl } from "../src/services/doorMetadata";
 import { mockOpenDoor } from "../src/services/opener";
 import { extractAutoparkkiUrlFromQr } from "../src/services/qr";
 import { colors } from "../src/styles/theme";
@@ -56,6 +57,7 @@ export default function HomeScreen() {
   const [editingGarage, setEditingGarage] = useState<GarageProfile | undefined>();
   const [editingPlate, setEditingPlate] = useState<PlateProfile | undefined>();
   const [scannedGarageUrl, setScannedGarageUrl] = useState<string | undefined>();
+  const [scannedGarageName, setScannedGarageName] = useState<string | undefined>();
   const [scanLocked, setScanLocked] = useState(false);
   const [debugFetchVisible, setDebugFetchVisible] = useState(false);
   const [debugFetchLoading, setDebugFetchLoading] = useState(false);
@@ -67,6 +69,7 @@ export default function HomeScreen() {
     setEditingGarage(undefined);
     setEditingPlate(undefined);
     setScannedGarageUrl(undefined);
+    setScannedGarageName(undefined);
   }
 
   function handleError(error: unknown) {
@@ -106,9 +109,21 @@ export default function HomeScreen() {
     }
 
     setScannedGarageUrl(extractedUrl);
+    setScannedGarageName("Detecting door name...");
     profiles.setStatus("ready");
-    profiles.setMessage("QR scanned. Name this door and save it.");
+    profiles.setMessage("QR scanned. Detecting door name...");
     setModalMode("addGarage");
+
+    suggestDoorNameFromAccessUrl(extractedUrl)
+      .then((suggestedName) => {
+        if (suggestedName) {
+          setScannedGarageName(suggestedName);
+          profiles.setMessage(`Detected door: ${suggestedName}`);
+        }
+      })
+      .catch(() => {
+        profiles.setMessage("QR scanned. Name this door and save it.");
+      });
   }
 
   async function runDebugFetch() {
@@ -275,7 +290,7 @@ export default function HomeScreen() {
           editingGarage={editingGarage}
           editingPlate={editingPlate}
           scannedGarageUrl={scannedGarageUrl}
-          defaultGarageName={`Garage ${profiles.garageProfiles.length + 1}`}
+          defaultGarageName={scannedGarageName || `Garage ${profiles.garageProfiles.length + 1}`}
           defaultPlateLabel={`Plate ${profiles.plateProfiles.length + 1}`}
           onClose={closeModal}
           onSaveGarage={(name, url) => {
@@ -361,44 +376,44 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    padding: 24,
-    paddingBottom: 36,
+    padding: 20,
+    paddingBottom: 24,
   },
   header: {
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: 10,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 38,
+    fontSize: 34,
     fontWeight: "800",
     color: colors.text,
     letterSpacing: -0.6,
   },
   subtitle: {
-    marginTop: 8,
-    fontSize: 17,
+    marginTop: 4,
+    fontSize: 15,
     color: colors.muted,
   },
   openCard: {
     backgroundColor: colors.card,
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 18,
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
   },
   openTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "900",
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   openButton: {
-    height: 76,
-    borderRadius: 22,
+    height: 64,
+    borderRadius: 20,
     backgroundColor: colors.green,
     justifyContent: "center",
     alignItems: "center",
@@ -408,14 +423,14 @@ const styles = StyleSheet.create({
   },
   openButtonText: {
     color: "#FFFFFF",
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "900",
     letterSpacing: 1.5,
   },
   note: {
-    marginTop: 18,
-    fontSize: 13,
-    lineHeight: 19,
+    marginTop: 12,
+    fontSize: 12,
+    lineHeight: 17,
     color: colors.muted,
     textAlign: "center",
   },

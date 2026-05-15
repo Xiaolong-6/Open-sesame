@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.6.0
+
+One-screen compact UI release.
+
+### Changed
+- Removed helper text under Step 1 and Step 2.
+- Removed secondary text under the current door and plate buttons.
+- Reduced card padding, margins, OPEN button height, and status card height.
+- Scan-time door-name detection now updates the Add Door modal default name directly after QR scan.
+
+### Goal
+- Keep the OPEN button and status visible on a typical phone screen without scrolling.
+
 ## 2.5.0
 
 Mobile UI and metadata-fix release.

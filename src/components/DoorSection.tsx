@@ -23,9 +23,6 @@ export function DoorSection({
     <View style={styles.card}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Step 1. Scan the door code</Text>
-        <Text style={styles.sectionSubtitle}>
-          Scan once, then choose the saved door from the button below.
-        </Text>
       </View>
 
       <View style={styles.mainRow}>
@@ -38,9 +35,6 @@ export function DoorSection({
         >
           <Text style={styles.compactMainTitle} numberOfLines={1}>
             {activeGarage ? activeGarage.name : "Choose door"}
-          </Text>
-          <Text style={styles.compactMainSubtitle} numberOfLines={1}>
-            {activeGarage ? activeGarage.accessUrl : "No door selected"}
           </Text>
         </Pressable>
       </View>

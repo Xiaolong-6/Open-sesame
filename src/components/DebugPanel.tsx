@@ -49,13 +49,13 @@ export function DebugPanel({
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: 18,
+    marginTop: 12,
     backgroundColor: colors.surfaceSoft,
-    borderRadius: 20,
-    padding: 18,
+    borderRadius: 18,
+    padding: 14,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "900",
     color: colors.text,
     marginBottom: 8,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   debugFetchButton: {
-    marginTop: 14,
+    marginTop: 10,
     borderRadius: 14,
     backgroundColor: colors.openingSoft,
     paddingVertical: 12,

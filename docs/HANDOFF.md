@@ -2,7 +2,7 @@
 
 ## Current version
 
-2.5.0
+2.6.0
 
 ## Current app mode
 
