@@ -2,7 +2,7 @@
 
 ## Current version
 
-2.7.0
+2.8.0
 
 ## Current app mode
 
@@ -35,3 +35,10 @@ Validate the real opener prototype on Android with authorized access. Collect th
 6. Keep mock mode as fallback.
 
 Do not hardcode real garage URLs, license plates, cookies, or tokens into the repository.
+
+## App icon assets
+
+- `assets/icon.png`: main Expo app icon.
+- `assets/adaptive-icon.png`: Android adaptive icon foreground.
+- `assets/splash-icon.png`: splash image.
+

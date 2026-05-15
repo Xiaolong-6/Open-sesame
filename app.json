@@ -2,48 +2,30 @@
   "expo": {
     "name": "Open-Sesame",
     "slug": "open-sesame",
-    "version": "2.0.0",
+    "version": "2.8.0",
     "orientation": "portrait",
     "scheme": "opensesame",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.xl6.opensesame",
-      "infoPlist": {
-        "NSCameraUsageDescription": "Open-Sesame uses the camera to scan Autoparkki door QR codes."
-      }
-    },
     "android": {
       "package": "com.xl6.opensesame",
       "permissions": [
         "CAMERA"
       ],
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F4F1EA"
       }
     },
-    "web": {
-      "bundler": "metro"
-    },
     "plugins": [
       "expo-router",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Open-Sesame uses the camera to scan Autoparkki door QR codes."
-        }
-      ]
+      "expo-camera"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "9b8d6cc7-b91f-4d30-be9e-2c508e815533"
-      }
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F1EA"
     }
   }
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.8.0
+
+App icon asset release.
+
+### Added
+- `assets/icon.png`
+- `assets/adaptive-icon.png`
+- `assets/splash-icon.png`
+- Expo `app.json` icon, adaptive icon, and splash configuration.
+
 ## 2.7.0
 
 Real opener prototype release.
