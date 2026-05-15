@@ -2,7 +2,7 @@
 
 Open-Sesame AndroidNative Lite is a small native Kotlin Android app for faster reuse of authorized **EuroPark (autoparkki)** door QR access pages in Finland.
 
-The active Android project is under `native-android/`. Earlier Expo / React Native and MIT App Inventor implementations remain in the repository as legacy/archive material and are not part of the active Android build.
+The active Android project now lives at the repository root. Earlier Expo / React Native files are archived under `archive/expo-react-native/` for historical reference.
 
 ## Current version
 
@@ -11,6 +11,18 @@ The active Android project is under `native-android/`. Earlier Expo / React Nati
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
 - Default license plate: `ABC-123`
+
+## Repository layout
+
+```text
+app/                         Active Android application module
+gradle/                      Gradle wrapper files
+build.gradle.kts             Root Gradle build file
+settings.gradle.kts          Gradle project settings
+gradle.properties            AndroidX / Gradle / Kotlin settings
+archive/expo-react-native/   Archived Expo / React Native implementation
+legacy-app-inventor/         Legacy App Inventor material, if present
+```
 
 ## For users
 
@@ -39,15 +51,6 @@ Open-Sesame on epävirallinen paikallinen apusovellus EuroParkin Suomessa käytt
 Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyysisesti, avautuiko ovi. Käytä sovellusta vain oviin ja rekisterinumeroihin, joihin sinulla on käyttöoikeus.
 
 ## For developers
-
-### Active project layout
-
-```text
-native-android/app/                 Android application module
-native-android/gradle/              Gradle wrapper files
-native-android/build.gradle.kts     Root Gradle build file
-native-android/settings.gradle.kts  Gradle project settings
-```
 
 ### Runtime flow
 
@@ -80,7 +83,7 @@ The app **does not** use a hardware sensor, camera check, Bluetooth state, barri
 
 ## Build
 
-Open `native-android/` in Android Studio, then run:
+Open this repository root in Android Studio, then run:
 
 ```text
 Build -> Build Bundle(s) / APK(s) -> Build APK(s)
@@ -89,13 +92,12 @@ Build -> Build Bundle(s) / APK(s) -> Build APK(s)
 Debug APK output:
 
 ```text
-native-android/app/build/outputs/apk/debug/app-debug.apk
+app/build/outputs/apk/debug/app-debug.apk
 ```
 
 From the command line on Windows:
 
 ```powershell
-cd native-android
 .\gradlew.bat assembleDebug
 ```
 
@@ -114,6 +116,8 @@ User-facing changes:
 - Added default plate creation with `ABC-123` when no plate exists.
 - Standardized visible operator wording to `EuroPark (autoparkki)`.
 - Changed the QR scanner title to `Scan EuroPark (autoparkki) QR`.
+- Moved the active Android Gradle project from `native-android/` to the repository root.
+- Archived the earlier Expo / React Native implementation under `archive/expo-react-native/`.
 
 Developer-facing changes:
 
@@ -122,6 +126,7 @@ Developer-facing changes:
 - `DEBUG` shows `Mode: real opener`.
 - Current-door diagnostics now include GET HTTP status, final URL, suggested door name, page title, form method/action/control count, detected plate field, submit control, and readable page text preview.
 - Version values were updated for `0.3.0-native-lite`.
+- Root-level build command is now `./gradlew assembleDebug` or `.\gradlew.bat assembleDebug`.
 
 ### 0.2.1-native-lite
 

@@ -30,7 +30,7 @@ class QrScannerActivity : ComponentActivity() {
         frame.addView(previewView)
 
         frame.addView(TextView(this).apply {
-            text = "Scan Autoparkki QR"
+            text = "Scan EuroPark (autoparkki) QR"
             textSize = 20f
             setTextColor(android.graphics.Color.WHITE)
             setBackgroundColor(0x66000000)
