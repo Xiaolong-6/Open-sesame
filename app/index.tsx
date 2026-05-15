@@ -27,7 +27,7 @@ import {
   type DebugFetchResult,
 } from "../src/services/debugFetch";
 import { suggestDoorNameFromAccessUrl } from "../src/services/doorMetadata";
-import { mockOpenDoor } from "../src/services/opener";
+import { realOpenDoor } from "../src/services/opener";
 import { extractAutoparkkiUrlFromQr } from "../src/services/qr";
 import { colors } from "../src/styles/theme";
 import type {
@@ -160,9 +160,9 @@ export default function HomeScreen() {
     );
 
     try {
-      const message = await mockOpenDoor(profiles.activeGarage, profiles.activePlate);
-      profiles.setStatus("success");
-      profiles.setMessage(message);
+      const result = await realOpenDoor(profiles.activeGarage, profiles.activePlate);
+      profiles.setStatus(result.ok ? "success" : "failed");
+      profiles.setMessage(result.message);
     } catch (error) {
       profiles.setStatus("failed");
       profiles.setMessage(error instanceof Error ? error.message : "Unknown error");

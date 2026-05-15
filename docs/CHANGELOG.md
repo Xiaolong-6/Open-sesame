@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.7.0
+
+Real opener prototype release.
+
+### Added
+- `realOpenDoor()` in `src/services/opener.ts`.
+- Authorized GET → parse form → submit license plate POST/GET flow.
+- Generic HTML form parser for hidden fields, CSRF-like tokens, plate input detection, and submit controls.
+- OPEN button now calls the real opener prototype instead of the mock opener.
+
+### Safety / limitations
+- The app only uses the saved access URL and selected license plate.
+- It does not bypass authentication or generate access tokens.
+- If the page has no parseable form, the request fails instead of guessing a dangerous POST.
+- Success detection is conservative; HTTP 200 after submit means "request sent", not guaranteed physical opening.
+
 ## 2.6.0
 
 One-screen compact UI release.
