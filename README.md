@@ -7,7 +7,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 ## Screenshot
 
 <p align="left">
-  <img src="docs/images/open-sesame-v0.3.0-native-lite-screenshot.jpg" alt="Open-Sesame v0.3.0-native-lite Android screenshot" width="100">
+  <img src="docs/images/open-sesame-v0.3.0-native-lite-screenshot.png" alt="Open-Sesame v0.3.0-native-lite Android screenshot" width="150">
 </p>
 
 ## Current version
