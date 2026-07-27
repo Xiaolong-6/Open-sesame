@@ -193,7 +193,7 @@ internal fun MainActivity.editDoorDialog(door: DoorProfile) {
 
 internal fun MainActivity.addPlateDialog(existing: PlateProfile?) {
     val input = EditText(this).apply {
-        hint = getString(R.string.vehicle)
+        hint = "ABC-123"
         setText(existing?.plateNumber ?: "")
     }
 

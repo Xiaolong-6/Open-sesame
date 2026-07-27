@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.5.5`
+- App version: `0.5.6`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,10 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.6
+
+- Changed the add-license-plate input hint back to `ABC-123` as an example only.
 
 ### 0.5.5
 
