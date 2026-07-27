@@ -272,6 +272,19 @@ internal fun MainActivity.showInstructions() {
     }
 
     buttons.addView(TextView(this).apply {
+        text = getString(R.string.share)
+        textSize = 14f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Green)
+        gravity = Gravity.CENTER
+        setPadding(dp(14), dp(10), dp(14), dp(10))
+        setOnClickListener {
+            dialog.dismiss()
+            shareReleaseLink()
+        }
+    })
+
+    buttons.addView(TextView(this).apply {
         text = getString(R.string.update)
         textSize = 14f
         setTypeface(null, Typeface.BOLD)

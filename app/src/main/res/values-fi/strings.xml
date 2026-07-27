@@ -40,6 +40,8 @@
     <string name="reset">Nollaa</string>
     <string name="ok">OK</string>
     <string name="update">PÄIVITÄ</string>
+    <string name="share">JAA</string>
+    <string name="share_open_sesame">Jaa Open-Sesame</string>
     <string name="delete_current_door_question">Poistetaanko nykyinen ovi?</string>
     <string name="delete_current_door_message">Tämä poistaa valitun oven URL-osoitteen tästä puhelimesta.</string>
     <string name="delete_current_plate_question">Poistetaanko nykyinen rekisterinumero?</string>

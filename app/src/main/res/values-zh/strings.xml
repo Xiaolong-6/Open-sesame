@@ -40,6 +40,8 @@
     <string name="reset">重置</string>
     <string name="ok">确定</string>
     <string name="update">更新</string>
+    <string name="share">分享</string>
+    <string name="share_open_sesame">分享 Open-Sesame</string>
     <string name="delete_current_door_question">删除当前门？</string>
     <string name="delete_current_door_message">这会从本机删除所选门链接。</string>
     <string name="delete_current_plate_question">删除当前车牌？</string>

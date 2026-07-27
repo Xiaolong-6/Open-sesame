@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.0`
+- App version: `0.4.1`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,11 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.1
+
+- Added Android system sharing for the public Open-Sesame release page from Help.
+- Kept sharing limited to public release metadata, never saved door URLs or license plates.
 
 ### 0.4.0
 

@@ -40,6 +40,8 @@
     <string name="reset">Reset</string>
     <string name="ok">OK</string>
     <string name="update">UPDATE</string>
+    <string name="share">SHARE</string>
+    <string name="share_open_sesame">Share Open-Sesame</string>
     <string name="delete_current_door_question">Delete current door?</string>
     <string name="delete_current_door_message">This removes the selected door URL from this phone.</string>
     <string name="delete_current_plate_question">Delete current plate?</string>
