@@ -10,11 +10,11 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.5.2`
+- App version: `0.5.3`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
-- Default license plate: `ABC-123`
+- Default license plate: none
 
 ## Repository layout
 
@@ -61,13 +61,14 @@ Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyy
 ### Runtime flow
 
 1. `MainActivity` loads local door and plate profiles from `ProfileStore`.
-2. If there is no saved plate, `MainActivity.reload()` creates the default local plate `ABC-123`.
-3. The Door card opens saved-door selection, and its menu can start `QrScannerActivity`, which uses CameraX / ML Kit to scan QR content.
+2. If there is no saved plate, the Vehicle card prompts the user to add one.
+3. The Door card opens saved-door selection, or starts `QrScannerActivity` directly when no door is saved. The scanner uses CameraX / ML Kit to scan QR content.
 4. `MainActivity.normalizeAutoparkkiAccessUrl()` accepts only HTTPS URLs whose host is `autoparkki.fi` or a subdomain and whose path starts with `/access/`.
 5. When a door URL is saved, `AutoparkkiOpener.suggestDoorName()` may GET the page and derive a readable door name from the legacy page text.
-6. The Vehicle card opens saved-plate selection, and its menu can add, edit, or delete plate profiles.
-7. `OPEN DOOR` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
-8. Advanced diagnostics are hidden from the default main screen and call `AutoparkkiOpener.debugAccessInfo()` only after developer mode is enabled.
+6. The Vehicle card adds a plate directly when empty, or opens saved-plate selection when profiles exist.
+7. Door and Vehicle picker rows can be tapped to select, edited with the row edit action, or long-pressed to enter multi-select deletion.
+8. `OPEN DOOR` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
+9. Advanced diagnostics are hidden from the default main screen and call `AutoparkkiOpener.debugAccessInfo()` only after developer mode is enabled.
 
 ### Door-opening request logic
 
@@ -108,6 +109,14 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.3
+
+- Removed selected-state text from Door and Vehicle picker rows; selected rows now use bold text only.
+- Removed per-row delete buttons from pickers.
+- Added long-press multi-select deletion for saved doors and vehicles.
+- Removed automatic creation of the placeholder `ABC-123` plate.
+- Changed empty Door and Vehicle home cards into direct scan/add actions.
 
 ### 0.5.2
 

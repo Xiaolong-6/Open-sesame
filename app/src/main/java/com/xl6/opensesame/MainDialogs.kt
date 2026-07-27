@@ -1,6 +1,5 @@
 package com.xl6.opensesame
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.Typeface
@@ -9,6 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -20,6 +20,87 @@ internal fun MainActivity.showDoorMenu() {
 
 internal fun MainActivity.showPlateMenu() {
     choosePlateDialog()
+}
+
+private data class CenterDialogAction(
+    val label: String,
+    val destructive: Boolean = false,
+    val action: () -> Unit
+)
+
+private fun MainActivity.showCenterDialog(
+    title: String,
+    message: String? = null,
+    body: View? = null,
+    actions: List<CenterDialogAction> = listOf(CenterDialogAction(getString(R.string.ok)) {})
+) {
+    val dialog = Dialog(this)
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+    val content = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        minimumWidth = resources.displayMetrics.widthPixels - dp(64)
+        setPadding(dp(20), dp(20), dp(20), dp(16))
+        background = rounded(UiColors.Card, dp(14))
+    }
+
+    content.addView(TextView(this).apply {
+        text = title
+        textSize = 18f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Text)
+        gravity = Gravity.CENTER
+        includeFontPadding = false
+        setPadding(0, 0, 0, dp(14))
+    })
+
+    if (!message.isNullOrBlank()) {
+        content.addView(TextView(this).apply {
+            text = message
+            textSize = 14f
+            setTextColor(UiColors.Muted)
+            gravity = Gravity.CENTER
+            setLineSpacing(dp(2).toFloat(), 1f)
+            setPadding(0, 0, 0, dp(16))
+        })
+    }
+
+    body?.let {
+        content.addView(it, LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, 0, 0, dp(16))
+        })
+    }
+
+    val buttons = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+    }
+
+    actions.forEach { item ->
+        buttons.addView(TextView(this).apply {
+            text = item.label
+            textSize = 14f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(if (item.destructive) UiColors.Danger else UiColors.Green)
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            setOnClickListener {
+                dialog.dismiss()
+                item.action()
+            }
+        })
+    }
+    content.addView(buttons, LinearLayout.LayoutParams(-1, -2))
+
+    dialog.setContentView(content)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+    dialog.window?.apply {
+        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setGravity(Gravity.CENTER)
+    }
 }
 
 internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
@@ -49,26 +130,28 @@ internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
         }.start()
     }
 
-    AlertDialog.Builder(this)
-        .setTitle(getString(R.string.add_door))
-        .setView(container)
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.save)) { _, _ ->
+    showCenterDialog(
+        title = getString(R.string.add_door),
+        body = container,
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.save)) {
             val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
             if (url == null) {
                 showMessage(getString(R.string.invalid_europark_access_url), getString(R.string.try_again), UiColors.Danger)
-                return@setPositiveButton
+            } else {
+                val name = nameInput.text.toString().trim().ifBlank { getString(R.string.europark_door_fallback) }
+                val profile = DoorProfile(store.newId("door"), name, url)
+                doors.add(profile)
+                store.saveDoors(doors)
+                store.setActiveDoorId(profile.id)
+                reload()
+                render()
+                showMessage(getString(R.string.ready_to_open), getString(R.string.open_door), UiColors.Green)
             }
-            val name = nameInput.text.toString().trim().ifBlank { getString(R.string.europark_door_fallback) }
-            val profile = DoorProfile(store.newId("door"), name, url)
-            doors.add(profile)
-            store.saveDoors(doors)
-            store.setActiveDoorId(profile.id)
-            reload()
-            render()
-            showMessage(getString(R.string.ready_to_open), getString(R.string.open_door), UiColors.Green)
-        }
-        .show()
+            }
+        )
+    )
 }
 
 internal fun MainActivity.editDoorDialog(door: DoorProfile) {
@@ -83,59 +166,63 @@ internal fun MainActivity.editDoorDialog(door: DoorProfile) {
     container.addView(nameInput)
     container.addView(urlInput)
 
-    AlertDialog.Builder(this)
-        .setTitle(getString(R.string.edit_door))
-        .setView(container)
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.save)) { _, _ ->
+    showCenterDialog(
+        title = getString(R.string.edit_door),
+        body = container,
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.save)) {
             val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
             if (url == null) {
                 showMessage(getString(R.string.invalid_europark_access_url), getString(R.string.try_again), UiColors.Danger)
-                return@setPositiveButton
+            } else {
+                doors = doors.map {
+                    if (it.id == door.id) it.copy(
+                        name = nameInput.text.toString(),
+                        accessUrl = url
+                    ) else it
+                }.toMutableList()
+                store.saveDoors(doors)
+                reload()
+                render()
             }
-            doors = doors.map {
-                if (it.id == door.id) it.copy(
-                    name = nameInput.text.toString(),
-                    accessUrl = url
-                ) else it
-            }.toMutableList()
-            store.saveDoors(doors)
-            reload()
-            render()
-        }
-        .show()
+            }
+        )
+    )
 }
 
 internal fun MainActivity.addPlateDialog(existing: PlateProfile?) {
     val input = EditText(this).apply {
-        hint = "ABC-123"
+        hint = getString(R.string.vehicle)
         setText(existing?.plateNumber ?: "")
     }
 
-    AlertDialog.Builder(this)
-        .setTitle(if (existing == null) getString(R.string.add_license_plate) else getString(R.string.edit_license_plate))
-        .setView(input)
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.save)) { _, _ ->
+    showCenterDialog(
+        title = if (existing == null) getString(R.string.add_license_plate) else getString(R.string.edit_license_plate),
+        body = input,
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.save)) {
             val plate = input.text.toString().trim().uppercase()
-            if (plate.isBlank()) return@setPositiveButton
+            if (plate.isNotBlank()) {
+                if (existing == null) {
+                    val p = PlateProfile(store.newId("plate"), plate)
+                    plates.add(p)
+                    store.savePlates(plates)
+                    store.setActivePlateId(p.id)
+                } else {
+                    plates = plates.map {
+                        if (it.id == existing.id) it.copy(plateNumber = plate) else it
+                    }.toMutableList()
+                    store.savePlates(plates)
+                }
 
-            if (existing == null) {
-                val p = PlateProfile(store.newId("plate"), plate)
-                plates.add(p)
-                store.savePlates(plates)
-                store.setActivePlateId(p.id)
-            } else {
-                plates = plates.map {
-                    if (it.id == existing.id) it.copy(plateNumber = plate) else it
-                }.toMutableList()
-                store.savePlates(plates)
+                reload()
+                render()
             }
-
-            reload()
-            render()
-        }
-        .show()
+            }
+        )
+    )
 }
 
 internal fun MainActivity.chooseDoorDialog() {
@@ -145,6 +232,7 @@ internal fun MainActivity.chooseDoorDialog() {
         emptyText = getString(R.string.no_door_saved),
         rows = doors.map { door ->
             ProfilePickerRow(
+                id = door.id,
                 label = door.name,
                 selected = door.id == activeDoorId,
                 onSelect = {
@@ -153,8 +241,17 @@ internal fun MainActivity.chooseDoorDialog() {
                     render()
                 },
                 onEdit = { editDoorDialog(door) },
-                onDelete = { deleteDoor(door) }
             )
+        },
+        onDeleteSelected = { ids ->
+            val deletedActive = activeDoorId in ids
+            doors.removeAll { it.id in ids }
+            store.saveDoors(doors)
+            if (deletedActive) {
+                store.setActiveDoorId(doors.firstOrNull()?.id)
+            }
+            reload()
+            render()
         },
         onPrimaryAction = { scanDoor() }
     )
@@ -167,6 +264,7 @@ internal fun MainActivity.choosePlateDialog() {
         emptyText = getString(R.string.no_vehicle_saved),
         rows = plates.map { plate ->
             ProfilePickerRow(
+                id = plate.id,
                 label = plate.plateNumber,
                 selected = plate.id == activePlateId,
                 onSelect = {
@@ -175,8 +273,17 @@ internal fun MainActivity.choosePlateDialog() {
                     render()
                 },
                 onEdit = { addPlateDialog(plate) },
-                onDelete = { deletePlate(plate) }
             )
+        },
+        onDeleteSelected = { ids ->
+            val deletedActive = activePlateId in ids
+            plates.removeAll { it.id in ids }
+            store.savePlates(plates)
+            if (deletedActive) {
+                store.setActivePlateId(plates.firstOrNull()?.id)
+            }
+            reload()
+            render()
         },
         onPrimaryAction = { addPlateDialog(null) }
     )
@@ -188,11 +295,12 @@ internal fun MainActivity.deleteActiveDoor() {
 }
 
 internal fun MainActivity.deleteDoor(door: DoorProfile) {
-    AlertDialog.Builder(this)
-        .setTitle(getString(R.string.delete_current_door_question))
-        .setMessage(getString(R.string.delete_current_door_message))
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.delete)) { _, _ ->
+    showCenterDialog(
+        title = getString(R.string.delete_current_door_question),
+        message = getString(R.string.delete_current_door_message),
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.delete), destructive = true) {
             val wasActive = door.id == activeDoorId
             doors.removeAll { it.id == door.id }
             store.saveDoors(doors)
@@ -201,8 +309,9 @@ internal fun MainActivity.deleteDoor(door: DoorProfile) {
             }
             reload()
             render()
-        }
-        .show()
+            }
+        )
+    )
 }
 
 internal fun MainActivity.deleteActivePlate() {
@@ -211,11 +320,12 @@ internal fun MainActivity.deleteActivePlate() {
 }
 
 internal fun MainActivity.deletePlate(plate: PlateProfile) {
-    AlertDialog.Builder(this)
-        .setTitle(getString(R.string.delete_current_plate_question))
-        .setMessage(getString(R.string.delete_current_plate_message))
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.delete)) { _, _ ->
+    showCenterDialog(
+        title = getString(R.string.delete_current_plate_question),
+        message = getString(R.string.delete_current_plate_message),
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.delete), destructive = true) {
             val wasActive = plate.id == activePlateId
             plates.removeAll { it.id == plate.id }
             store.savePlates(plates)
@@ -224,16 +334,17 @@ internal fun MainActivity.deletePlate(plate: PlateProfile) {
             }
             reload()
             render()
-        }
-        .show()
+            }
+        )
+    )
 }
 
 private data class ProfilePickerRow(
+    val id: String,
     val label: String,
     val selected: Boolean,
     val onSelect: () -> Unit,
-    val onEdit: () -> Unit,
-    val onDelete: () -> Unit
+    val onEdit: () -> Unit
 )
 
 private fun MainActivity.showProfilePickerDialog(
@@ -241,10 +352,13 @@ private fun MainActivity.showProfilePickerDialog(
     primaryAction: String,
     emptyText: String,
     rows: List<ProfilePickerRow>,
+    onDeleteSelected: (Set<String>) -> Unit,
     onPrimaryAction: () -> Unit
 ) {
     val dialog = Dialog(this)
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    var deleteMode = false
+    val checkedIds = mutableSetOf<String>()
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
@@ -279,26 +393,93 @@ private fun MainActivity.showProfilePickerDialog(
         setMargins(0, 0, 0, dp(12))
     })
 
-    if (rows.isEmpty()) {
-        content.addView(TextView(this).apply {
-            text = emptyText
-            textSize = 15f
-            setTextColor(UiColors.Muted)
-            gravity = Gravity.CENTER
-            includeFontPadding = false
-            setPadding(dp(8), dp(18), dp(8), dp(18))
-        })
-    } else {
+    val listContainer = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+    content.addView(listContainer)
+
+    fun renderRows() {
+        listContainer.removeAllViews()
+
+        if (rows.isEmpty()) {
+            listContainer.addView(TextView(this).apply {
+                text = emptyText
+                textSize = 15f
+                setTextColor(UiColors.Muted)
+                gravity = Gravity.CENTER
+                includeFontPadding = false
+                setPadding(dp(8), dp(18), dp(8), dp(18))
+            })
+            return
+        }
+
         rows.forEachIndexed { index, row ->
             if (index > 0) {
-                content.addView(View(this).apply {
+                listContainer.addView(View(this).apply {
                     setBackgroundColor(UiColors.BorderSoft)
                     alpha = 0.55f
                 }, LinearLayout.LayoutParams(-1, dp(1)))
             }
-            content.addView(profilePickerRowView(dialog, row))
+            listContainer.addView(profilePickerRowView(
+                dialog = dialog,
+                item = row,
+                deleteMode = deleteMode,
+                checked = row.id in checkedIds,
+                onToggleDelete = {
+                    if (row.id in checkedIds) {
+                        checkedIds.remove(row.id)
+                    } else {
+                        checkedIds.add(row.id)
+                    }
+                    renderRows()
+                },
+                onEnterDeleteMode = {
+                    deleteMode = true
+                    checkedIds.add(row.id)
+                    renderRows()
+                }
+            ))
+        }
+
+        if (deleteMode) {
+            listContainer.addView(TextView(this).apply {
+                text = getString(R.string.delete_selected)
+                textSize = 15f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(Color.WHITE)
+                gravity = Gravity.CENTER
+                includeFontPadding = false
+                alpha = if (checkedIds.isEmpty()) 0.5f else 1f
+                background = rounded(UiColors.Danger, dp(4))
+                setPadding(dp(12), dp(13), dp(12), dp(13))
+                setOnClickListener {
+                    if (checkedIds.isNotEmpty()) {
+                        dialog.dismiss()
+                        onDeleteSelected(checkedIds.toSet())
+                    }
+                }
+            }, LinearLayout.LayoutParams(-1, -2).apply {
+                setMargins(0, dp(14), 0, 0)
+            })
+
+            listContainer.addView(TextView(this).apply {
+                text = getString(R.string.cancel)
+                textSize = 14f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(UiColors.Muted)
+                gravity = Gravity.CENTER
+                includeFontPadding = false
+                setPadding(dp(12), dp(13), dp(12), 0)
+                setOnClickListener {
+                    deleteMode = false
+                    checkedIds.clear()
+                    renderRows()
+                }
+            })
         }
     }
+
+    renderRows()
 
     dialog.setContentView(content)
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -310,20 +491,25 @@ private fun MainActivity.showProfilePickerDialog(
     }
 }
 
-private fun MainActivity.profilePickerRowView(dialog: Dialog, item: ProfilePickerRow): LinearLayout {
+private fun MainActivity.profilePickerRowView(
+    dialog: Dialog,
+    item: ProfilePickerRow,
+    deleteMode: Boolean,
+    checked: Boolean,
+    onToggleDelete: () -> Unit,
+    onEnterDeleteMode: () -> Unit
+): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
         setPadding(0, dp(10), 0, dp(10))
 
-        addView(TextView(this@profilePickerRowView).apply {
-            text = if (item.selected) getString(R.string.on) else ""
-            textSize = 12f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(UiColors.Green)
-            gravity = Gravity.CENTER
-            includeFontPadding = false
-        }, LinearLayout.LayoutParams(dp(34), dp(44)))
+        if (deleteMode) {
+            addView(CheckBox(this@profilePickerRowView).apply {
+                isChecked = checked
+                setOnClickListener { onToggleDelete() }
+            }, LinearLayout.LayoutParams(dp(44), dp(44)))
+        }
 
         addView(TextView(this@profilePickerRowView).apply {
             text = item.label
@@ -335,24 +521,27 @@ private fun MainActivity.profilePickerRowView(dialog: Dialog, item: ProfilePicke
             maxLines = 1
             gravity = Gravity.CENTER_VERTICAL
             setOnClickListener {
-                dialog.dismiss()
-                item.onSelect()
+                if (deleteMode) {
+                    onToggleDelete()
+                } else {
+                    dialog.dismiss()
+                    item.onSelect()
+                }
+            }
+            setOnLongClickListener {
+                onEnterDeleteMode()
+                true
             }
         }, LinearLayout.LayoutParams(0, dp(44), 1f))
 
-        addView(profilePickerSmallAction(getString(R.string.edit)) {
-            dialog.dismiss()
-            item.onEdit()
-        }, LinearLayout.LayoutParams(dp(58), dp(38)).apply {
-            setMargins(dp(6), 0, 0, 0)
-        })
-
-        addView(profilePickerSmallAction(getString(R.string.delete), destructive = true) {
-            dialog.dismiss()
-            item.onDelete()
-        }, LinearLayout.LayoutParams(dp(68), dp(38)).apply {
-            setMargins(dp(6), 0, 0, 0)
-        })
+        if (!deleteMode) {
+            addView(profilePickerSmallAction(getString(R.string.edit)) {
+                dialog.dismiss()
+                item.onEdit()
+            }, LinearLayout.LayoutParams(dp(58), dp(38)).apply {
+                setMargins(dp(6), 0, 0, 0)
+            })
+        }
     }
 }
 
@@ -671,42 +860,41 @@ internal fun MainActivity.debugFetch() {
     }
 
     if (door == null) {
-        AlertDialog.Builder(this)
-            .setTitle("Debug")
-            .setMessage(baseInfo + "\nCurrent door: none selected.\nScan a EuroPark (autoparkki) door first.")
-            .setPositiveButton(getString(R.string.ok), null)
-            .show()
+        showCenterDialog(
+            title = "Debug",
+            message = baseInfo + "\nCurrent door: none selected.\nScan a EuroPark (autoparkki) door first."
+        )
         return
     }
 
-    AlertDialog.Builder(this)
-        .setTitle("Debug")
-        .setMessage(baseInfo + "\nCurrent door: selected\nFetching current door webpage info...")
-        .setPositiveButton(getString(R.string.ok), null)
-        .show()
+    showCenterDialog(
+        title = "Debug",
+        message = baseInfo + "\nCurrent door: selected\nFetching current door webpage info..."
+    )
 
     Thread {
         val pageInfo = opener.debugAccessInfo(door.accessUrl)
         runOnUiThread {
-            AlertDialog.Builder(this)
-                .setTitle("Debug")
-                .setMessage(baseInfo + "\nCurrent door: selected\n\n" + pageInfo)
-                .setPositiveButton(getString(R.string.ok), null)
-                .show()
+            showCenterDialog(
+                title = "Debug",
+                message = baseInfo + "\nCurrent door: selected\n\n" + pageInfo
+            )
         }
     }.start()
 }
 
 internal fun MainActivity.clearAll() {
-    AlertDialog.Builder(this)
-        .setTitle(getString(R.string.reset_app_data_question))
-        .setMessage(getString(R.string.reset_app_data_message))
-        .setNegativeButton(getString(R.string.cancel), null)
-        .setPositiveButton(getString(R.string.reset)) { _, _ ->
+    showCenterDialog(
+        title = getString(R.string.reset_app_data_question),
+        message = getString(R.string.reset_app_data_message),
+        actions = listOf(
+            CenterDialogAction(getString(R.string.cancel)) {},
+            CenterDialogAction(getString(R.string.reset), destructive = true) {
             store.clearAll()
             reload()
             lastOpenedAt = null
             render()
-        }
-        .show()
+            }
+        )
+    )
 }

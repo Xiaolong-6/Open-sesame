@@ -30,6 +30,7 @@ fun MainActivity.headerView(onHelp: () -> Unit): LinearLayout {
 fun MainActivity.doorSummaryCardView(
     value: String,
     empty: Boolean,
+    emptyAction: String,
     onClick: () -> Unit
 ): LinearLayout {
     return LinearLayout(this).apply {
@@ -61,15 +62,20 @@ fun MainActivity.doorSummaryCardView(
             })
 
             textBlock.addView(TextView(this@doorSummaryCardView).apply {
-                text = value
+                text = if (empty) emptyAction else value
                 textSize = 19f
-                setTextColor(if (empty) UiColors.Muted else UiColors.Text)
-                setTypeface(null, if (empty) Typeface.NORMAL else Typeface.BOLD)
+                setTextColor(if (empty) UiColors.Green else UiColors.Text)
+                setTypeface(null, Typeface.BOLD)
                 gravity = Gravity.CENTER
                 includeFontPadding = false
                 ellipsize = TextUtils.TruncateAt.END
                 maxLines = 2
-                setPadding(0, dp(7), 0, 0)
+                if (empty) {
+                    background = roundedStroke(UiColors.GreenSoft, UiColors.BorderSoft, dp(4), dp(1))
+                    setPadding(dp(12), dp(12), dp(12), dp(12))
+                } else {
+                    setPadding(0, dp(7), 0, 0)
+                }
             })
 
             addView(textBlock, LinearLayout.LayoutParams(-1, -2))
@@ -83,6 +89,7 @@ fun MainActivity.openPanelCardView(
     isOpening: Boolean,
     bindOpenButton: (TextView) -> Unit,
     onOpen: () -> Unit,
+    emptyAction: String,
     onPlateClick: () -> Unit
 ): LinearLayout {
     return LinearLayout(this).apply {
@@ -104,10 +111,10 @@ fun MainActivity.openPanelCardView(
         }, LinearLayout.LayoutParams(-1, -2))
 
         addView(TextView(this@openPanelCardView).apply {
-            text = plateValue
+            text = if (plateEmpty) emptyAction else plateValue
             textSize = 22f
-            setTextColor(if (plateEmpty) UiColors.Muted else UiColors.Text)
-            setTypeface(null, if (plateEmpty) Typeface.NORMAL else Typeface.NORMAL)
+            setTextColor(if (plateEmpty) UiColors.Green else UiColors.Text)
+            setTypeface(null, if (plateEmpty) Typeface.BOLD else Typeface.NORMAL)
             gravity = Gravity.CENTER
             includeFontPadding = false
             ellipsize = TextUtils.TruncateAt.END

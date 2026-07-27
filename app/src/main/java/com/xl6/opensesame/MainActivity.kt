@@ -71,12 +71,6 @@ class MainActivity : ComponentActivity() {
     internal fun reload() {
         doors = store.loadDoors()
         plates = store.loadPlates()
-        if (plates.isEmpty()) {
-            val defaultPlate = PlateProfile(store.newId("plate"), "ABC-123")
-            plates.add(defaultPlate)
-            store.savePlates(plates)
-            store.setActivePlateId(defaultPlate.id)
-        }
 
         activeDoorId = store.getActiveDoorId()
         activePlateId = store.getActivePlateId()
@@ -121,7 +115,8 @@ class MainActivity : ComponentActivity() {
         layout.addView(doorSummaryCardView(
             value = activeDoor()?.name ?: getString(R.string.no_door_saved),
             empty = activeDoor() == null,
-            onClick = { chooseDoorDialog() },
+            emptyAction = getString(R.string.scan_new_door),
+            onClick = { if (activeDoor() == null) scanDoor() else chooseDoorDialog() },
         ))
 
         layout.addView(openPanelCardView(
@@ -130,7 +125,8 @@ class MainActivity : ComponentActivity() {
             isOpening = isOpening,
             bindOpenButton = { openButton = it },
             onOpen = { openDoor() },
-            onPlateClick = { choosePlateDialog() },
+            emptyAction = getString(R.string.add_license_plate),
+            onPlateClick = { if (activePlate() == null) addPlateDialog(null) else choosePlateDialog() },
         ))
 
         layout.addView(statusInfoCardView(
