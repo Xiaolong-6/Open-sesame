@@ -9,18 +9,23 @@ class ProfileStore(context: Context) {
     private val prefs = context.getSharedPreferences("open_sesame_native_lite", Context.MODE_PRIVATE)
 
     fun loadDoors(): MutableList<DoorProfile> {
-        val raw = prefs.getString("doors", "[]") ?: "[]"
-        val arr = JSONArray(raw)
-        val out = mutableListOf<DoorProfile>()
-        for (i in 0 until arr.length()) {
-            val obj = arr.getJSONObject(i)
-            out += DoorProfile(
-                id = obj.optString("id"),
-                name = obj.optString("name"),
-                accessUrl = obj.optString("accessUrl")
-            )
+        return try {
+            val raw = prefs.getString("doors", "[]") ?: "[]"
+            val arr = JSONArray(raw)
+            val out = mutableListOf<DoorProfile>()
+            for (i in 0 until arr.length()) {
+                val obj = arr.getJSONObject(i)
+                out += DoorProfile(
+                    id = obj.optString("id"),
+                    name = obj.optString("name"),
+                    accessUrl = obj.optString("accessUrl")
+                )
+            }
+            out
+        } catch (_: Exception) {
+            prefs.edit().remove("doors").remove("activeDoorId").apply()
+            mutableListOf()
         }
-        return out
     }
 
     fun saveDoors(doors: List<DoorProfile>) {
@@ -36,17 +41,22 @@ class ProfileStore(context: Context) {
     }
 
     fun loadPlates(): MutableList<PlateProfile> {
-        val raw = prefs.getString("plates", "[]") ?: "[]"
-        val arr = JSONArray(raw)
-        val out = mutableListOf<PlateProfile>()
-        for (i in 0 until arr.length()) {
-            val obj = arr.getJSONObject(i)
-            out += PlateProfile(
-                id = obj.optString("id"),
-                plateNumber = obj.optString("plateNumber")
-            )
+        return try {
+            val raw = prefs.getString("plates", "[]") ?: "[]"
+            val arr = JSONArray(raw)
+            val out = mutableListOf<PlateProfile>()
+            for (i in 0 until arr.length()) {
+                val obj = arr.getJSONObject(i)
+                out += PlateProfile(
+                    id = obj.optString("id"),
+                    plateNumber = obj.optString("plateNumber")
+                )
+            }
+            out
+        } catch (_: Exception) {
+            prefs.edit().remove("plates").remove("activePlateId").apply()
+            mutableListOf()
         }
-        return out
     }
 
     fun savePlates(plates: List<PlateProfile>) {

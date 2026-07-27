@@ -12,7 +12,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.3.6`
+- App version: `0.3.7`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35

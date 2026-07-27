@@ -1,5 +1,6 @@
 package com.xl6.opensesame
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import android.view.Gravity
@@ -18,7 +19,7 @@ import com.google.mlkit.vision.common.InputImage
 
 class QrScannerActivity : ComponentActivity() {
     companion object {
-        var lastScannedText: String? = null
+        const val EXTRA_SCAN_RESULT = "com.xl6.opensesame.SCAN_RESULT"
     }
 
     private var locked = false
@@ -71,7 +72,7 @@ class QrScannerActivity : ComponentActivity() {
                             val value = barcodes.firstOrNull()?.rawValue
                             if (!value.isNullOrBlank()) {
                                 locked = true
-                                lastScannedText = value
+                                setResult(RESULT_OK, Intent().putExtra(EXTRA_SCAN_RESULT, value))
                                 finish()
                             }
                         }

@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -41,6 +42,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var messageText: TextView
     private lateinit var openButton: TextView
 
+    private val scanDoorLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val scanned = result.data?.getStringExtra(QrScannerActivity.EXTRA_SCAN_RESULT)
+        if (!scanned.isNullOrBlank()) {
+            handleScannedDoor(scanned)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -51,20 +59,6 @@ class MainActivity : ComponentActivity() {
         store = ProfileStore(this)
         reload()
         render()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val scanned = QrScannerActivity.lastScannedText
-        if (!scanned.isNullOrBlank()) {
-            QrScannerActivity.lastScannedText = null
-            val url = normalizeAutoparkkiAccessUrl(scanned)
-            if (url == null) {
-                showMessage("Invalid QR content.", "TRY AGAIN", UiColors.Danger)
-            } else {
-                addDoorDialog(url)
-            }
-        }
     }
 
     internal fun reload() {
@@ -170,7 +164,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.6"
+            text = "v0.3.7"
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -184,7 +178,16 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 101)
             return
         }
-        startActivity(Intent(this, QrScannerActivity::class.java))
+        scanDoorLauncher.launch(Intent(this, QrScannerActivity::class.java))
+    }
+
+    private fun handleScannedDoor(scanned: String) {
+        val url = normalizeAutoparkkiAccessUrl(scanned)
+        if (url == null) {
+            showMessage("Invalid QR content.", "TRY AGAIN", UiColors.Danger)
+        } else {
+            addDoorDialog(url)
+        }
     }
 
     private fun openDoor() {
