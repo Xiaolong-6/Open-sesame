@@ -12,7 +12,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.3.2`
+- App version: `0.3.3`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,11 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.3.3
+
+- Added a Developer mode checkbox to the Help dialog.
+- Made Developer mode explicitly disableable from Help.
 
 ### 0.3.2
 

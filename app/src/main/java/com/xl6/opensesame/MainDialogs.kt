@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -239,13 +240,21 @@ internal fun MainActivity.showInstructions() {
         setLineSpacing(dp(2).toFloat(), 1.0f)
     })
 
+    val developerModeCheckbox = CheckBox(this).apply {
+        text = "Developer mode"
+        textSize = 14f
+        setTextColor(UiColors.Text)
+        isChecked = developerMode
+        setPadding(0, dp(16), 0, dp(4))
+    }
+    content.addView(developerModeCheckbox)
+
     content.addView(TextView(this).apply {
-        text = "v0.3.2"
+        text = "v0.3.3"
         textSize = 12f
         setTextColor(UiColors.Muted)
         gravity = Gravity.CENTER
-        setPadding(0, dp(18), 0, dp(12))
-        setOnClickListener { unlockDeveloperMode() }
+        setPadding(0, dp(8), 0, dp(12))
     })
 
     val buttons = LinearLayout(this).apply {
@@ -273,7 +282,12 @@ internal fun MainActivity.showInstructions() {
         setTextColor(UiColors.Green)
         gravity = Gravity.CENTER
         setPadding(dp(14), dp(10), dp(4), dp(10))
-        setOnClickListener { dialog.dismiss() }
+        setOnClickListener {
+            developerMode = developerModeCheckbox.isChecked
+            helpTapCount = 0
+            dialog.dismiss()
+            render()
+        }
     })
 
     content.addView(buttons)
@@ -290,7 +304,7 @@ internal fun MainActivity.showInstructions() {
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.2")
+        appendLine("Version: 0.3.3")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")
