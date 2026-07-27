@@ -56,9 +56,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val darkTheme = ThemeController.isDark(this)
+        UiColors.applyTheme(darkTheme)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(UiColors.Bg, UiColors.Bg),
-            navigationBarStyle = SystemBarStyle.light(UiColors.Bg, UiColors.Bg)
+            statusBarStyle = if (darkTheme) SystemBarStyle.dark(UiColors.Bg) else SystemBarStyle.light(UiColors.Bg, UiColors.Bg),
+            navigationBarStyle = if (darkTheme) SystemBarStyle.dark(UiColors.Bg) else SystemBarStyle.light(UiColors.Bg, UiColors.Bg)
         )
 
         store = ProfileStore(this)

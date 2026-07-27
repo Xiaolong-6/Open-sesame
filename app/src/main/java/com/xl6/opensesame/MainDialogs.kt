@@ -288,9 +288,13 @@ internal fun MainActivity.showInstructions() {
     updateDeveloperCheck()
 
     content.addView(settingsSectionCard(getString(R.string.preferences)) {
-        addView(settingsActionRow(getString(R.string.language), showDivider = false) {
+        addView(settingsActionRow(getString(R.string.language)) {
             dialog.dismiss()
             showLanguageMenu()
+        })
+        addView(settingsActionRow(getString(R.string.theme), showDivider = false) {
+            dialog.dismiss()
+            showThemeMenu()
         })
     })
 
@@ -469,6 +473,33 @@ internal fun MainActivity.showLanguageMenu() {
 private fun MainActivity.setLanguageAndRestart(language: String) {
     LocaleController.setLanguageOverride(this, language)
     store.setDeveloperMode(true)
+    recreate()
+}
+
+internal fun MainActivity.showThemeMenu() {
+    val current = ThemeController.getThemeOverride(this)
+    fun label(name: String, theme: String): String {
+        return if (current == theme) "$name ON" else name
+    }
+
+    showBottomSheet(
+        title = getString(R.string.theme),
+        actions = listOf(
+            SheetAction(label(getString(R.string.system_theme), ThemeController.THEME_SYSTEM)) {
+                setThemeAndRestart(ThemeController.THEME_SYSTEM)
+            },
+            SheetAction(label(getString(R.string.light_theme), ThemeController.THEME_LIGHT)) {
+                setThemeAndRestart(ThemeController.THEME_LIGHT)
+            },
+            SheetAction(label(getString(R.string.dark_theme), ThemeController.THEME_DARK)) {
+                setThemeAndRestart(ThemeController.THEME_DARK)
+            },
+        )
+    )
+}
+
+private fun MainActivity.setThemeAndRestart(theme: String) {
+    ThemeController.setThemeOverride(this, theme)
     recreate()
 }
 

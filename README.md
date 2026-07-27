@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.7`
+- App version: `0.4.8`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.8
+
+- Updated the app palette toward the original autoparkki page style with light gray background, white cards, and blue primary actions.
+- Added a dark theme palette.
+- Added a Preferences theme switcher with System, Light, and Dark options; System is the default.
 
 ### 0.4.7
 

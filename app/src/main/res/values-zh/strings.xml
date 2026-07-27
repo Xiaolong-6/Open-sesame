@@ -66,6 +66,10 @@
     <string name="advanced">高级</string>
     <string name="debug">调试</string>
     <string name="language">语言</string>
+    <string name="theme">主题</string>
+    <string name="system_theme">跟随系统</string>
+    <string name="light_theme">浅色</string>
+    <string name="dark_theme">深色</string>
     <string name="system_language">跟随系统</string>
     <string name="english">英语</string>
     <string name="finnish">芬兰语</string>

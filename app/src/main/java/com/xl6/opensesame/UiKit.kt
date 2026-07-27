@@ -9,17 +9,45 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 object UiColors {
-    val Bg: Int = Color.rgb(244, 241, 234)
-    val Card: Int = Color.WHITE
-    val Text: Int = Color.rgb(31, 41, 51)
-    val Muted: Int = Color.rgb(105, 115, 134)
-    val Green: Int = Color.rgb(31, 122, 90)
-    val GreenSoft: Int = Color.rgb(232, 243, 238)
-    val Danger: Int = Color.rgb(180, 35, 24)
-    val DangerSoft: Int = Color.rgb(253, 232, 232)
-    val Warning: Int = Color.rgb(181, 71, 8)
-    val NeutralSoft: Int = Color.rgb(246, 247, 249)
-    val BorderSoft: Int = Color.rgb(220, 226, 232)
+    var Bg: Int = Color.rgb(245, 246, 248)
+    var Card: Int = Color.WHITE
+    var Text: Int = Color.rgb(9, 24, 43)
+    var Muted: Int = Color.rgb(89, 101, 119)
+    var Green: Int = Color.rgb(59, 130, 246)
+    var GreenSoft: Int = Color.rgb(229, 240, 255)
+    var Danger: Int = Color.rgb(190, 40, 36)
+    var DangerSoft: Int = Color.rgb(255, 236, 236)
+    var Warning: Int = Color.rgb(181, 93, 13)
+    var NeutralSoft: Int = Color.rgb(241, 243, 246)
+    var BorderSoft: Int = Color.rgb(213, 218, 226)
+
+    fun applyTheme(dark: Boolean) {
+        if (dark) {
+            Bg = Color.rgb(15, 18, 24)
+            Card = Color.rgb(26, 31, 40)
+            Text = Color.rgb(238, 242, 247)
+            Muted = Color.rgb(158, 169, 184)
+            Green = Color.rgb(96, 165, 250)
+            GreenSoft = Color.rgb(28, 49, 74)
+            Danger = Color.rgb(248, 113, 113)
+            DangerSoft = Color.rgb(70, 30, 34)
+            Warning = Color.rgb(251, 146, 60)
+            NeutralSoft = Color.rgb(35, 42, 52)
+            BorderSoft = Color.rgb(61, 71, 86)
+        } else {
+            Bg = Color.rgb(245, 246, 248)
+            Card = Color.WHITE
+            Text = Color.rgb(9, 24, 43)
+            Muted = Color.rgb(89, 101, 119)
+            Green = Color.rgb(59, 130, 246)
+            GreenSoft = Color.rgb(229, 240, 255)
+            Danger = Color.rgb(190, 40, 36)
+            DangerSoft = Color.rgb(255, 236, 236)
+            Warning = Color.rgb(181, 93, 13)
+            NeutralSoft = Color.rgb(241, 243, 246)
+            BorderSoft = Color.rgb(213, 218, 226)
+        }
+    }
 }
 
 fun Context.dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()

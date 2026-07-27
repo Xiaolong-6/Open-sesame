@@ -66,6 +66,10 @@
     <string name="advanced">Advanced</string>
     <string name="debug">DEBUG</string>
     <string name="language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="system_theme">System theme</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
     <string name="system_language">System language</string>
     <string name="english">English</string>
     <string name="finnish">Finnish</string>

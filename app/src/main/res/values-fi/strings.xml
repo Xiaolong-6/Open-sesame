@@ -66,6 +66,10 @@
     <string name="advanced">Lisäasetukset</string>
     <string name="debug">DEBUG</string>
     <string name="language">Kieli</string>
+    <string name="theme">Teema</string>
+    <string name="system_theme">Järjestelmän teema</string>
+    <string name="light_theme">Vaalea</string>
+    <string name="dark_theme">Tumma</string>
     <string name="system_language">Järjestelmän kieli</string>
     <string name="english">Englanti</string>
     <string name="finnish">Suomi</string>
