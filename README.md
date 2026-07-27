@@ -12,7 +12,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.3.0-native-lite`
+- App version: `0.3.1-native-lite`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,13 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.3.1-native-lite
+
+- Replaced text-based card action indicators with drawn chevron and vertical-menu icons.
+- Kept Door and Vehicle values single-line with end ellipsis to protect the action area.
+- Restored the main `OPEN DOOR` button after a short success confirmation.
+- Shortened the help popup copy.
 
 ### 0.3.0-native-lite
 

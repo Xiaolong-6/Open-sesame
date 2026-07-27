@@ -216,7 +216,7 @@ internal fun MainActivity.showInstructions() {
     })
 
     content.addView(TextView(this).apply {
-        text = "v0.3.0-native-lite"
+        text = "v0.3.1-native-lite"
         textSize = 12f
         setTextColor(UiColors.Muted)
         gravity = android.view.Gravity.CENTER
@@ -235,7 +235,7 @@ internal fun MainActivity.showInstructions() {
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.0-native-lite")
+        appendLine("Version: 0.3.1-native-lite")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")

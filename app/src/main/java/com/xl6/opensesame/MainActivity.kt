@@ -168,7 +168,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.0"
+            text = "v0.3.1"
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
