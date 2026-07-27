@@ -37,9 +37,10 @@ archive/legacy-app-inventor/ Archived MIT App Inventor implementation
 - Scan an authorized EuroPark (autoparkki) door QR code once.
 - Save the door URL locally on this phone.
 - Save one or more license plates locally on this phone.
-- Tap `OPEN` later to submit the saved door URL and selected plate faster.
-- Use `UPDATE` to open the GitHub release page.
-- Use `DEBUG` to inspect the currently selected door page and parser information.
+- Confirm the selected door and vehicle on the main screen.
+- Tap `OPEN DOOR` to submit the saved door URL and selected plate faster.
+- Use the card menus to choose, add, edit, or delete saved profiles.
+- Use the help popup version text to enable advanced diagnostics when needed.
 
 ### Important limitations
 
@@ -62,12 +63,12 @@ Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyy
 
 1. `MainActivity` loads local door and plate profiles from `ProfileStore`.
 2. If there is no saved plate, `MainActivity.reload()` creates the default local plate `ABC-123`.
-3. `SCAN` opens `QrScannerActivity`, which uses CameraX / ML Kit to scan QR content.
+3. The Door card opens saved-door selection, and its menu can start `QrScannerActivity`, which uses CameraX / ML Kit to scan QR content.
 4. `MainActivity.extractAutoparkkiUrl()` accepts only HTTPS URLs whose host is `autoparkki.fi` or a subdomain and whose path starts with `/access/`.
 5. When a door URL is saved, `AutoparkkiOpener.suggestDoorName()` may GET the page and derive a readable door name from the legacy page text.
-6. `ENTER` edits the selected local plate profile.
-7. `OPEN` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
-8. `DEBUG` calls `AutoparkkiOpener.debugAccessInfo()` for the selected door and displays parser/page diagnostics in a popup.
+6. The Vehicle card opens saved-plate selection, and its menu can add, edit, or delete plate profiles.
+7. `OPEN DOOR` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
+8. Advanced diagnostics are hidden from the default main screen and call `AutoparkkiOpener.debugAccessInfo()` only after developer mode is enabled.
 
 ### Door-opening request logic
 
@@ -113,12 +114,14 @@ From the command line on Windows:
 
 User-facing changes:
 
-- Reworked the main screen into a step-card layout.
-- Kept the subtitle under the app title as `You only have to scan once!`.
-- Emphasized only the three primary actions: `SCAN`, `ENTER`, and `OPEN`.
-- De-emphasized secondary actions such as `EDIT`, `DELETE`, `DEBUG`, `UPDATE`, and `CLEAR`.
-- Changed `RELEASES` to `UPDATE` while keeping the GitHub releases URL target.
-- Added the upper-right `?` popup with the concise EuroPark/autoparkki quick-opener explanation.
+- Reworked the main screen into a compact control panel.
+- Replaced persistent Step 1 / Step 2 / Step 3 sections with Door and Vehicle cards.
+- Changed the primary action from `OPEN` to `OPEN DOOR`.
+- Moved choose, scan, edit, and delete actions into card taps and card menus.
+- Hid debug/reset/update controls from the default main screen.
+- Added one-line request status and clearer `OPEN DOOR` / `OPENING...` / `OPENED` / `TRY AGAIN` button states.
+- Added haptic feedback for opening start, success, and failure.
+- Added the upper-right `?` popup with the concise EuroPark/autoparkki quick-opener explanation and update link.
 - Added default plate creation with `ABC-123` when no plate exists.
 - Standardized visible operator wording to `EuroPark (autoparkki)`.
 - Changed the QR scanner title to `Scan EuroPark (autoparkki) QR`.

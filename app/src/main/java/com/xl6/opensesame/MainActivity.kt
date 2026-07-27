@@ -6,15 +6,20 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private lateinit var store: ProfileStore
@@ -24,27 +29,19 @@ class MainActivity : ComponentActivity() {
     private var plates = mutableListOf<PlateProfile>()
     private var activeDoorId: String? = null
     private var activePlateId: String? = null
+    private var developerMode = false
+    private var helpTapCount = 0
+    private var isOpening = false
+    private var lastOpenedAt: String? = null
 
-    private lateinit var doorButton: TextView
-    private lateinit var plateButton: TextView
     private lateinit var statusText: TextView
     private lateinit var messageText: TextView
-
-    private val bg = Color.rgb(244, 241, 234)
-    private val card = Color.WHITE
-    private val textColor = Color.rgb(31, 41, 51)
-    private val muted = Color.rgb(105, 115, 134)
-    private val green = Color.rgb(31, 122, 90)
-    private val greenSoft = Color.rgb(232, 243, 238)
-    private val danger = Color.rgb(180, 35, 24)
-    private val dangerSoft = Color.rgb(253, 232, 232)
-    private val neutralSoft = Color.rgb(246, 247, 249)
-    private val borderSoft = Color.rgb(220, 226, 232)
+    private lateinit var openButton: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = bg
-        window.navigationBarColor = bg
+        window.statusBarColor = UiColors.Bg
+        window.navigationBarColor = UiColors.Bg
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
         store = ProfileStore(this)
@@ -59,7 +56,7 @@ class MainActivity : ComponentActivity() {
             QrScannerActivity.lastScannedText = null
             val url = extractAutoparkkiUrl(scanned)
             if (url == null) {
-                showMessage("FAILED", "Invalid QR content.")
+                showMessage("Invalid QR content.", "TRY AGAIN", UiColors.Danger)
             } else {
                 addDoorDialog(url)
             }
@@ -75,6 +72,7 @@ class MainActivity : ComponentActivity() {
             store.savePlates(plates)
             store.setActivePlateId(defaultPlate.id)
         }
+
         activeDoorId = store.getActiveDoorId()
         activePlateId = store.getActivePlateId()
 
@@ -91,140 +89,214 @@ class MainActivity : ComponentActivity() {
 
     private fun render() {
         val root = ScrollView(this).apply {
-            setBackgroundColor(bg)
+            setBackgroundColor(UiColors.Bg)
             clipToPadding = false
             fitsSystemWindows = true
         }
 
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(18), dp(18), dp(18))
+            setPadding(dp(18), dp(18), dp(18), dp(14))
         }
 
         root.addView(layout)
         setContentView(root)
 
-        val header = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, 0, 0, dp(4))
-        }
+        layout.addView(header())
+        layout.addView(statusBar(), LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, dp(12), 0, dp(12))
+        })
 
-        header.addView(TextView(this).apply {
-            text = "Open-Sesame"
-            textSize = 32f
-            setTextColor(textColor)
-            setTypeface(null, Typeface.BOLD)
-            includeFontPadding = false
-        }, LinearLayout.LayoutParams(0, -2, 1f))
+        layout.addView(profileCard(
+            title = "Door",
+            value = activeDoor()?.name ?: "No door saved",
+            empty = activeDoor() == null,
+            emptyAction = "Scan door QR code",
+            onClick = { chooseDoorDialog() },
+            onAction = { scanDoor() },
+            onMenu = { showDoorMenu() },
+        ))
 
-        header.addView(TextView(this).apply {
-            text = "?"
-            textSize = 20f
-            setTextColor(textColor)
+        layout.addView(profileCard(
+            title = "Vehicle",
+            value = activePlate()?.plateNumber ?: "No vehicle saved",
+            empty = activePlate() == null,
+            emptyAction = "Add license plate",
+            onClick = { choosePlateDialog() },
+            onAction = { addPlateDialog(null) },
+            onMenu = { showPlateMenu() },
+        ))
+
+        openButton = TextView(this).apply {
+            text = "OPEN DOOR"
+            textSize = 24f
             gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
             setTypeface(null, Typeface.BOLD)
-            background = roundedStroke(Color.TRANSPARENT, borderSoft, dp(24), dp(1))
-            setOnClickListener { showInstructions() }
-        }, LinearLayout.LayoutParams(dp(48), dp(48)))
-
-        layout.addView(header)
-
-        layout.addView(TextView(this).apply {
-            text = "You only have to scan once!"
-            textSize = 15f
-            setTextColor(muted)
-            includeFontPadding = false
-            setPadding(0, dp(4), 0, dp(14))
-        })
-
-        layout.addView(stepSection("Step 1", mainAction("SCAN") { scanDoor() }) {
-            doorButton = selectorButton(activeDoor()?.name ?: "Door") { chooseDoorDialog() }
-            addView(doorButton)
-            addView(row(
-                quietAction("EDIT") { activeDoor()?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
-                dangerQuietAction("DELETE") { deleteActiveDoor() },
-            ))
-        })
-
-        layout.addView(stepSection("Step 2", mainAction("ENTER") {
-            activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null)
-        }) {
-            plateButton = selectorButton(activePlate()?.plateNumber ?: "ABC-123") { choosePlateDialog() }
-            addView(plateButton)
-            addView(row(
-                quietAction("EDIT") { activePlate()?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
-                dangerQuietAction("DELETE") { deleteActivePlate() },
-            ))
-        })
-
-        layout.addView(section("Step 3") {
-            addView(TextView(this@MainActivity).apply {
-                text = "OPEN"
-                textSize = 30f
-                gravity = Gravity.CENTER
-                setTextColor(Color.WHITE)
-                setTypeface(null, Typeface.NORMAL)
-                background = rounded(green, dp(18))
-                setPadding(0, dp(18), 0, dp(18))
-                setOnClickListener { openDoor() }
-            })
-        })
-
-        val statusBox = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-            background = rounded(greenSoft, dp(18))
+            background = rounded(UiColors.Green, dp(18))
+            setPadding(dp(10), dp(20), dp(10), dp(20))
+            isEnabled = !isOpening
+            alpha = if (isOpening) 0.72f else 1f
+            setOnClickListener { openDoor() }
         }
-
-        statusBox.addView(TextView(this).apply {
-            text = "Status"
-            textSize = 13f
-            setTextColor(muted)
-            includeFontPadding = false
+        layout.addView(openButton, LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, dp(4), 0, dp(10))
         })
-
-        statusText = TextView(this).apply {
-            text = "READY"
-            textSize = 22f
-            setTextColor(green)
-            setTypeface(null, Typeface.BOLD)
-            includeFontPadding = false
-            setPadding(0, dp(4), 0, 0)
-        }
-        statusBox.addView(statusText)
 
         messageText = TextView(this).apply {
-            text = "Ready"
-            textSize = 14f
-            setTextColor(Color.rgb(52, 64, 84))
+            text = lastOpenedAt?.let { "Last opened successfully at $it" } ?: "Scan once. Open anytime."
+            textSize = 13f
+            setTextColor(UiColors.Muted)
+            gravity = Gravity.CENTER
             includeFontPadding = false
-            setPadding(0, dp(6), 0, 0)
+            setPadding(dp(6), dp(2), dp(6), dp(8))
         }
-        statusBox.addView(messageText)
+        layout.addView(messageText)
 
-        layout.addView(statusBox, LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, 0, 0, dp(12))
-        })
-
-        layout.addView(debugSection())
+        if (developerMode) {
+            layout.addView(advancedSection())
+        }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.0-native-lite. Opens authorized EuroPark (autoparkki) doors faster by saving scanned door QR URLs and license plates locally."
+            text = "v0.3.0"
             textSize = 12f
-            setTextColor(muted)
+            setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
-            setPadding(dp(6), dp(10), dp(6), 0)
-            setLineSpacing(dp(2).toFloat(), 1.0f)
+            setPadding(0, dp(8), 0, 0)
+            setOnClickListener { unlockDeveloperMode() }
         })
     }
 
-    private fun debugSection(): LinearLayout {
-        return section("Debug") {
-            addView(row(
+    private fun header(): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+
+            addView(TextView(this@MainActivity).apply {
+                text = "Open-Sesame"
+                textSize = 30f
+                setTextColor(UiColors.Text)
+                setTypeface(null, Typeface.BOLD)
+                includeFontPadding = false
+            }, LinearLayout.LayoutParams(0, -2, 1f))
+
+            addView(TextView(this@MainActivity).apply {
+                text = "?"
+                textSize = 19f
+                setTextColor(UiColors.Text)
+                gravity = Gravity.CENTER
+                setTypeface(null, Typeface.BOLD)
+                background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(22), dp(1))
+                setOnClickListener { showInstructions() }
+            }, LinearLayout.LayoutParams(dp(44), dp(44)))
+        }
+    }
+
+    private fun statusBar(): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = rounded(UiColors.GreenSoft, dp(14))
+
+            statusText = TextView(this@MainActivity).apply {
+                text = if (isOpening) "Sending request..." else "Ready to open"
+                textSize = 15f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(if (isOpening) UiColors.Warning else UiColors.Green)
+                includeFontPadding = false
+            }
+            addView(statusText)
+        }
+    }
+
+    private fun profileCard(
+        title: String,
+        value: String,
+        empty: Boolean,
+        emptyAction: String,
+        onClick: () -> Unit,
+        onAction: () -> Unit,
+        onMenu: () -> Unit
+    ): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(14), dp(12), dp(14))
+            background = rounded(UiColors.Card, dp(16))
+            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+                setMargins(0, 0, 0, dp(12))
+            }
+
+            val row = LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setOnClickListener { if (empty) onAction() else onClick() }
+            }
+
+            val textBlock = LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.VERTICAL
+            }
+
+            textBlock.addView(TextView(this@MainActivity).apply {
+                text = title
+                textSize = 13f
+                setTextColor(UiColors.Muted)
+                includeFontPadding = false
+            })
+
+            textBlock.addView(TextView(this@MainActivity).apply {
+                text = value
+                textSize = 18f
+                setTextColor(if (empty) UiColors.Muted else UiColors.Text)
+                setTypeface(null, if (empty) Typeface.NORMAL else Typeface.BOLD)
+                includeFontPadding = false
+                maxLines = 1
+                setPadding(0, dp(7), 0, 0)
+            })
+
+            row.addView(textBlock, LinearLayout.LayoutParams(0, -2, 1f))
+
+            if (empty) {
+                row.addView(TextView(this@MainActivity).apply {
+                    text = emptyAction
+                    textSize = 13f
+                    setTypeface(null, Typeface.BOLD)
+                    gravity = Gravity.CENTER
+                    setTextColor(Color.WHITE)
+                    background = rounded(UiColors.Green, dp(12))
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    setOnClickListener { onAction() }
+                })
+            } else {
+                row.addView(TextView(this@MainActivity).apply {
+                    text = ">"
+                    textSize = 24f
+                    gravity = Gravity.CENTER
+                    setTextColor(UiColors.Muted)
+                    includeFontPadding = false
+                    setPadding(dp(8), 0, dp(8), 0)
+                })
+                row.addView(TextView(this@MainActivity).apply {
+                    text = "..."
+                    textSize = 18f
+                    gravity = Gravity.CENTER
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(UiColors.Muted)
+                    includeFontPadding = false
+                    setOnClickListener { onMenu() }
+                }, LinearLayout.LayoutParams(dp(40), dp(40)))
+            }
+
+            addView(row)
+        }
+    }
+
+    private fun advancedSection(): LinearLayout {
+        return section("Advanced") {
+            addView(actionRow(
                 quietAction("DEBUG") { debugFetch() },
                 quietAction("UPDATE") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
-                dangerQuietAction("CLEAR") { clearAll() },
+                dangerAction("RESET") { clearAll() },
             ))
         }
     }
@@ -233,16 +305,16 @@ class MainActivity : ComponentActivity() {
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = rounded(card, dp(18))
+            background = rounded(UiColors.Card, dp(16))
             layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-                setMargins(0, 0, 0, dp(12))
+                setMargins(0, dp(2), 0, dp(12))
             }
 
             addView(TextView(this@MainActivity).apply {
                 text = title
-                textSize = 18f
+                textSize = 16f
                 setTypeface(null, Typeface.BOLD)
-                setTextColor(textColor)
+                setTextColor(UiColors.Text)
                 includeFontPadding = false
                 setPadding(0, 0, 0, dp(10))
             })
@@ -251,108 +323,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun stepSection(title: String, actionView: TextView, content: LinearLayout.() -> Unit): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = rounded(card, dp(18))
-            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-                setMargins(0, 0, 0, dp(12))
+    private fun showDoorMenu() {
+        val door = activeDoor()
+        val items = arrayOf("Choose door", "Scan new door", "Edit current door", "Delete current door")
+        AlertDialog.Builder(this)
+            .setTitle("Door")
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> chooseDoorDialog()
+                    1 -> scanDoor()
+                    2 -> door?.let { editDoorDialog(it) } ?: addDoorDialog(null)
+                    3 -> deleteActiveDoor()
+                }
             }
+            .show()
+    }
 
-            val titleRow = LinearLayout(this@MainActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, 0, 0, dp(12))
+    private fun showPlateMenu() {
+        val plate = activePlate()
+        val items = arrayOf("Choose vehicle", "Add license plate", "Edit current plate", "Delete current plate")
+        AlertDialog.Builder(this)
+            .setTitle("Vehicle")
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> choosePlateDialog()
+                    1 -> addPlateDialog(null)
+                    2 -> plate?.let { addPlateDialog(it) } ?: addPlateDialog(null)
+                    3 -> deleteActivePlate()
+                }
             }
-
-            titleRow.addView(TextView(this@MainActivity).apply {
-                text = title
-                textSize = 22f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(textColor)
-                includeFontPadding = false
-            }, LinearLayout.LayoutParams(0, -2, 1f))
-
-            titleRow.addView(actionView, LinearLayout.LayoutParams(dp(112), dp(54)))
-            addView(titleRow)
-
-            content()
-        }
-    }
-
-    private fun selectorButton(value: String, onClick: () -> Unit): TextView {
-        return TextView(this).apply {
-            text = value
-            textSize = 18f
-            setTextColor(textColor)
-            gravity = Gravity.CENTER
-            maxLines = 1
-            background = rounded(greenSoft, dp(14))
-            setPadding(dp(12), dp(14), dp(12), dp(14))
-            setOnClickListener { onClick() }
-        }
-    }
-
-    private fun mainAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, Color.WHITE, green, onClick, true)
-    }
-
-    private fun primaryAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, Color.WHITE, green, onClick, true)
-    }
-
-    private fun secondaryAction(label: String, onClick: () -> Unit): TextView {
-        return quietAction(label, onClick)
-    }
-
-    private fun dangerAction(label: String, onClick: () -> Unit): TextView {
-        return dangerQuietAction(label, onClick)
-    }
-
-    private fun quietAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, muted, neutralSoft, onClick, false)
-    }
-
-    private fun dangerQuietAction(label: String, onClick: () -> Unit): TextView {
-        return action(label, danger, dangerSoft, onClick, false)
-    }
-
-    private fun action(
-        label: String,
-        textColor: Int,
-        backgroundColor: Int,
-        onClick: () -> Unit,
-        strong: Boolean
-    ): TextView {
-        return TextView(this).apply {
-            text = label
-            textSize = if (strong) 16f else 14f
-            setTypeface(null, Typeface.BOLD)
-            gravity = Gravity.CENTER
-            setTextColor(textColor)
-            background = if (strong) {
-                rounded(backgroundColor, dp(14))
-            } else {
-                roundedStroke(backgroundColor, borderSoft, dp(14), dp(1))
-            }
-            setPadding(dp(4), 0, dp(4), 0)
-            setOnClickListener { onClick() }
-        }
-    }
-
-    private fun row(vararg views: TextView): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setPadding(0, dp(10), 0, 0)
-            views.forEachIndexed { index, view ->
-                addView(view, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
-                    val left = if (index == 0) 0 else dp(5)
-                    val right = if (index == views.lastIndex) 0 else dp(5)
-                    setMargins(left, 0, right, 0)
-                })
-            }
-        }
+            .show()
     }
 
     private fun scanDoor() {
@@ -403,7 +403,7 @@ class MainActivity : ComponentActivity() {
                 store.setActiveDoorId(profile.id)
                 reload()
                 render()
-                showMessage("READY", "Saved door: $name")
+                showMessage("Ready to open", "OPEN DOOR", UiColors.Green)
             }
             .show()
     }
@@ -445,7 +445,7 @@ class MainActivity : ComponentActivity() {
         }
 
         AlertDialog.Builder(this)
-            .setTitle(if (existing == null) "Add plate" else "Edit plate")
+            .setTitle(if (existing == null) "Add license plate" else "Edit license plate")
             .setView(input)
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Save") { _, _ ->
@@ -493,7 +493,7 @@ class MainActivity : ComponentActivity() {
         }
 
         AlertDialog.Builder(this)
-            .setTitle("Choose plate")
+            .setTitle("Choose vehicle")
             .setItems(plates.map { it.plateNumber }.toTypedArray()) { _, which ->
                 store.setActivePlateId(plates[which].id)
                 reload()
@@ -505,8 +505,8 @@ class MainActivity : ComponentActivity() {
     private fun deleteActiveDoor() {
         val door = activeDoor() ?: return
         AlertDialog.Builder(this)
-            .setTitle("Delete door?")
-            .setMessage(door.name)
+            .setTitle("Delete current door?")
+            .setMessage("This removes the selected door URL from this phone.")
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Delete") { _, _ ->
                 doors.removeAll { it.id == door.id }
@@ -521,8 +521,8 @@ class MainActivity : ComponentActivity() {
     private fun deleteActivePlate() {
         val plate = activePlate() ?: return
         AlertDialog.Builder(this)
-            .setTitle("Delete plate?")
-            .setMessage(plate.plateNumber)
+            .setTitle("Delete current plate?")
+            .setMessage("This removes the selected license plate from this phone.")
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Delete") { _, _ ->
                 plates.removeAll { it.id == plate.id }
@@ -535,20 +535,25 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openDoor() {
+        if (isOpening) return
         val door = activeDoor()
         val plate = activePlate()
 
         if (door == null) {
-            showMessage("FAILED", "No door selected.")
+            showMessage("No door selected.", "TRY AGAIN", UiColors.Danger)
+            vibrateFailure()
             return
         }
 
         if (plate == null) {
-            showMessage("FAILED", "No plate selected.")
+            showMessage("No vehicle selected.", "TRY AGAIN", UiColors.Danger)
+            vibrateFailure()
             return
         }
 
-        showMessage("OPENING", "Opening ${door.name} for ${plate.plateNumber}...")
+        isOpening = true
+        updateOpeningUi("OPENING...", UiColors.Warning, "Sending request...")
+        vibrateLight()
 
         Thread {
             val result = try {
@@ -558,18 +563,46 @@ class MainActivity : ComponentActivity() {
             }
 
             runOnUiThread {
-                showMessage(if (result.ok) "SUCCESS" else "FAILED", result.message)
+                isOpening = false
+                if (result.ok) {
+                    lastOpenedAt = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                    updateOpeningUi("OPENED", UiColors.Green, "Door opened at $lastOpenedAt")
+                    messageText.text = "Last opened successfully at $lastOpenedAt"
+                    vibrateSuccess()
+                } else {
+                    updateOpeningUi("TRY AGAIN", UiColors.Danger, result.message.ifBlank { "Opening failed - retry" })
+                    vibrateFailure()
+                }
             }
         }.start()
     }
 
     private fun showInstructions() {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), 0, dp(12), 0)
+        }
+
+        content.addView(TextView(this).apply {
+            text = "Save an authorized EuroPark (autoparkki) door QR URL and license plate locally, then reuse them for one-tap opening.\n\nThe app sends the web request only. Always verify the physical door."
+            textSize = 15f
+            setTextColor(UiColors.Text)
+            setLineSpacing(dp(2).toFloat(), 1.0f)
+        })
+
+        content.addView(TextView(this).apply {
+            text = "v0.3.0-native-lite"
+            textSize = 12f
+            setTextColor(UiColors.Muted)
+            gravity = Gravity.CENTER
+            setPadding(0, dp(16), 0, 0)
+            setOnClickListener { unlockDeveloperMode() }
+        })
+
         AlertDialog.Builder(this)
-            .setTitle("EuroPark (autoparkki) quick opener")
-            .setMessage(
-                "Save an authorized EuroPark (autoparkki) door QR URL and license plate locally, then reuse them for faster opening requests.\n\n" +
-                    "This app only sends the web request. It does not physically verify whether the door opened."
-            )
+            .setTitle("Quick opener")
+            .setView(content)
+            .setNegativeButton("Update") { _, _ -> openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") }
             .setPositiveButton("OK", null)
             .show()
     }
@@ -588,7 +621,7 @@ class MainActivity : ComponentActivity() {
         if (door == null) {
             AlertDialog.Builder(this)
                 .setTitle("Debug")
-                .setMessage(baseInfo + "\nCurrent door: none selected.\nTap SCAN to add a EuroPark (autoparkki) door first.")
+                .setMessage(baseInfo + "\nCurrent door: none selected.\nScan a EuroPark (autoparkki) door first.")
                 .setPositiveButton("OK", null)
                 .show()
             return
@@ -596,7 +629,7 @@ class MainActivity : ComponentActivity() {
 
         AlertDialog.Builder(this)
             .setTitle("Debug")
-            .setMessage(baseInfo + "\nCurrent door: ${door.name}\nFetching current door webpage info...")
+            .setMessage(baseInfo + "\nCurrent door: selected\nFetching current door webpage info...")
             .setPositiveButton("OK", null)
             .show()
 
@@ -605,7 +638,7 @@ class MainActivity : ComponentActivity() {
             runOnUiThread {
                 AlertDialog.Builder(this)
                     .setTitle("Debug")
-                    .setMessage(baseInfo + "\nCurrent door: ${door.name}\n\n" + pageInfo)
+                    .setMessage(baseInfo + "\nCurrent door: selected\n\n" + pageInfo)
                     .setPositiveButton("OK", null)
                     .show()
             }
@@ -614,23 +647,55 @@ class MainActivity : ComponentActivity() {
 
     private fun clearAll() {
         AlertDialog.Builder(this)
-            .setTitle("Clear all local profiles?")
+            .setTitle("Reset app data?")
+            .setMessage("This deletes all local door URLs and license plates from this phone.")
             .setNegativeButton("Cancel", null)
-            .setPositiveButton("Clear") { _, _ ->
+            .setPositiveButton("Reset") { _, _ ->
                 store.clearAll()
                 reload()
+                lastOpenedAt = null
                 render()
             }
             .show()
     }
 
+    private fun unlockDeveloperMode() {
+        helpTapCount += 1
+        if (helpTapCount >= 5 && !developerMode) {
+            developerMode = true
+            helpTapCount = 0
+            render()
+            showMessage("Developer mode enabled.", "OPEN DOOR", UiColors.Green)
+        }
+    }
+
     private fun activeDoor(): DoorProfile? = doors.firstOrNull { it.id == activeDoorId }
     private fun activePlate(): PlateProfile? = plates.firstOrNull { it.id == activePlateId }
 
-    private fun showMessage(status: String, msg: String) {
+    private fun showMessage(msg: String, buttonLabel: String, color: Int) {
+        if (::statusText.isInitialized) {
+            statusText.text = msg
+            statusText.setTextColor(color)
+        }
+        if (::openButton.isInitialized) {
+            openButton.text = buttonLabel
+            openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(18))
+            openButton.alpha = if (isOpening) 0.72f else 1f
+            openButton.isEnabled = !isOpening
+        }
+        if (::messageText.isInitialized) {
+            messageText.text = msg
+        }
+    }
+
+    private fun updateOpeningUi(buttonLabel: String, color: Int, status: String) {
+        openButton.text = buttonLabel
+        openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(18))
+        openButton.isEnabled = !isOpening
+        openButton.alpha = if (isOpening) 0.72f else 1f
         statusText.text = status
-        statusText.setTextColor(if (status == "FAILED") danger else green)
-        messageText.text = msg
+        statusText.setTextColor(color)
+        messageText.text = status
     }
 
     private fun extractAutoparkkiUrl(raw: String): String? {
@@ -655,21 +720,4 @@ class MainActivity : ComponentActivity() {
     private fun openUrl(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
-
-    private fun rounded(color: Int, radius: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            setColor(color)
-            cornerRadius = radius.toFloat()
-        }
-    }
-
-    private fun roundedStroke(color: Int, strokeColor: Int, radius: Int, strokeWidth: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            setColor(color)
-            cornerRadius = radius.toFloat()
-            setStroke(strokeWidth, strokeColor)
-        }
-    }
-
-    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 }
