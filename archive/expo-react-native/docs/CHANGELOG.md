@@ -45,7 +45,7 @@ Mobile UI and metadata-fix release.
 
 ### Added
 - Better door-name extraction from Autoparkki access pages.
-- Location text such as `P-Luoteisrinne Finnoonsilta` is preferred over generic titles such as `EuroPark Finland - ADC`.
+- Location text from the authorized access page is preferred over generic titles such as `EuroPark Finland - ADC`.
 
 ### Changed
 - Step 1 and Step 2 now use a two-row mobile layout:

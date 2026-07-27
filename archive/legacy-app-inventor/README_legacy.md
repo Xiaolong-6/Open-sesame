@@ -1,11 +1,11 @@
 # Open-sesame
 A mobile app that opens a specific garage door (autoparkki).
-# 🚗 Finnoonsilta Carport Opener (P-Luoteisrinne)
+# 🚗 Autoparkki Garage Door Opener
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-orange.svg)](https://appinventor.mit.edu/)
 
-A lightweight application built with **MIT App Inventor** to automate the opening process of the Finnoonsilta P-Luoteisrinne carport door.
+A lightweight application built with **MIT App Inventor** to automate the opening process for an authorized Autoparkki garage door.
 
 ---
 
