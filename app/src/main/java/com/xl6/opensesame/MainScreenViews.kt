@@ -2,6 +2,7 @@ package com.xl6.opensesame
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.text.TextUtils
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -96,19 +97,20 @@ fun MainActivity.profileCardView(
             includeFontPadding = false
         })
 
-        textBlock.addView(TextView(this@profileCardView).apply {
-            text = value
-            textSize = 18f
-            setTextColor(if (empty) UiColors.Muted else UiColors.Text)
-            setTypeface(null, if (empty) Typeface.NORMAL else Typeface.BOLD)
-            includeFontPadding = false
-            maxLines = 1
-            setPadding(0, dp(7), 0, 0)
-        })
+            textBlock.addView(TextView(this@profileCardView).apply {
+                text = value
+                textSize = 18f
+                setTextColor(if (empty) UiColors.Muted else UiColors.Text)
+                setTypeface(null, if (empty) Typeface.NORMAL else Typeface.BOLD)
+                includeFontPadding = false
+                ellipsize = TextUtils.TruncateAt.END
+                maxLines = 1
+                setPadding(0, dp(7), 0, 0)
+            })
 
-        row.addView(textBlock, LinearLayout.LayoutParams(0, -2, 1f))
+            row.addView(textBlock, LinearLayout.LayoutParams(0, -2, 1f))
 
-        if (empty) {
+            if (empty) {
             row.addView(TextView(this@profileCardView).apply {
                 text = emptyAction
                 textSize = 13f
@@ -117,27 +119,33 @@ fun MainActivity.profileCardView(
                 setTextColor(Color.WHITE)
                 background = rounded(UiColors.Green, dp(12))
                 setPadding(dp(12), dp(10), dp(12), dp(10))
-                setOnClickListener { onAction() }
-            })
-        } else {
-            row.addView(TextView(this@profileCardView).apply {
-                text = ">"
-                textSize = 24f
-                gravity = Gravity.CENTER
-                setTextColor(UiColors.Muted)
-                includeFontPadding = false
-                setPadding(dp(8), 0, dp(8), 0)
-            })
-            row.addView(TextView(this@profileCardView).apply {
-                text = "..."
-                textSize = 18f
-                gravity = Gravity.CENTER
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(UiColors.Muted)
-                includeFontPadding = false
-                setOnClickListener { onMenu() }
-            }, LinearLayout.LayoutParams(dp(40), dp(40)))
-        }
+                    setOnClickListener { onAction() }
+                })
+            } else {
+                val actions = LinearLayout(this@profileCardView).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+
+                    addView(TextView(this@profileCardView).apply {
+                        text = ">"
+                        textSize = 22f
+                        gravity = Gravity.CENTER
+                        setTextColor(UiColors.Muted)
+                        includeFontPadding = false
+                    }, LinearLayout.LayoutParams(dp(30), dp(40)))
+
+                    addView(TextView(this@profileCardView).apply {
+                        text = "..."
+                        textSize = 17f
+                        gravity = Gravity.CENTER
+                        setTypeface(null, Typeface.BOLD)
+                        setTextColor(UiColors.Muted)
+                        includeFontPadding = false
+                        setOnClickListener { onMenu() }
+                    }, LinearLayout.LayoutParams(dp(44), dp(40)))
+                }
+                row.addView(actions, LinearLayout.LayoutParams(dp(78), dp(40)))
+            }
 
         addView(row)
     }

@@ -209,7 +209,7 @@ internal fun MainActivity.showInstructions() {
     }
 
     content.addView(TextView(this).apply {
-        text = "Save an authorized EuroPark (autoparkki) door QR URL and license plate locally, then reuse them for one-tap opening.\n\nThe app sends the web request only. Always verify the physical door."
+        text = "Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door."
         textSize = 15f
         setTextColor(UiColors.Text)
         setLineSpacing(dp(2).toFloat(), 1.0f)

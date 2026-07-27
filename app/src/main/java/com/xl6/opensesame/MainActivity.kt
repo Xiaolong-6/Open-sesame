@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -31,6 +33,7 @@ class MainActivity : ComponentActivity() {
     internal var helpTapCount = 0
     private var isOpening = false
     internal var lastOpenedAt: String? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private lateinit var statusText: TextView
     private lateinit var statusIcon: StatusIconView
@@ -216,6 +219,11 @@ class MainActivity : ComponentActivity() {
                     lastOpenedAt = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                     updateOpeningUi("OPENED", UiColors.Green, "Door opened at $lastOpenedAt")
                     messageText.text = "Last opened successfully at $lastOpenedAt"
+                    mainHandler.postDelayed({
+                        if (!isOpening && ::openButton.isInitialized) {
+                            openButton.text = "OPEN DOOR"
+                        }
+                    }, 2500)
                     vibrateSuccess()
                 } else {
                     updateOpeningUi("TRY AGAIN", UiColors.Danger, result.message.ifBlank { "Opening failed - retry" })
