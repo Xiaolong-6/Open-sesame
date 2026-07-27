@@ -259,7 +259,7 @@ internal fun MainActivity.showInstructions() {
     content.addView(developerModeCheckbox)
 
     content.addView(TextView(this).apply {
-        text = "v0.3.7"
+        text = "v0.3.8"
         textSize = 12f
         setTextColor(UiColors.Muted)
         gravity = Gravity.CENTER
@@ -313,7 +313,7 @@ internal fun MainActivity.showInstructions() {
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.7")
+        appendLine("Version: 0.3.8")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")

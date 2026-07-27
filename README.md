@@ -6,13 +6,11 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Screenshot
 
-<p align="left">
-  <img src="docs/images/open-sesame-v0.3.0-native-lite-screenshot.png" alt="Open-Sesame v0.3.0-native-lite Android screenshot" width="150">
-</p>
+The README screenshot is intentionally pending refresh for the next release so the repository does not show the older Step UI.
 
 ## Current version
 
-- App version: `0.3.7`
+- App version: `0.3.8`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -40,7 +38,7 @@ archive/legacy-app-inventor/ Archived MIT App Inventor implementation
 - Confirm the selected door and vehicle on the main screen.
 - Tap `OPEN DOOR` to submit the saved door URL and selected plate faster.
 - Use the card menus to choose, add, edit, or delete saved profiles.
-- Use the help popup version text to enable advanced diagnostics when needed.
+- Use the Developer mode checkbox in Help to show or hide advanced diagnostics.
 
 ### Important limitations
 
@@ -50,6 +48,7 @@ archive/legacy-app-inventor/ Archived MIT App Inventor implementation
 - A successful app response means the web request was sent or accepted by the parsed webpage flow; the user still needs to visually verify the door.
 - The app is currently targeted at EuroPark/autoparkki access pages in Finland. It may not work outside that webpage flow.
 - Door URLs and license plates are stored locally on the device, not in a cloud account.
+- Local storage uses app-private Android preferences, not end-to-end encryption.
 
 ### Suomenkielinen lyhyt kuvaus
 
@@ -64,7 +63,7 @@ Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyy
 1. `MainActivity` loads local door and plate profiles from `ProfileStore`.
 2. If there is no saved plate, `MainActivity.reload()` creates the default local plate `ABC-123`.
 3. The Door card opens saved-door selection, and its menu can start `QrScannerActivity`, which uses CameraX / ML Kit to scan QR content.
-4. `MainActivity.extractAutoparkkiUrl()` accepts only HTTPS URLs whose host is `autoparkki.fi` or a subdomain and whose path starts with `/access/`.
+4. `MainActivity.normalizeAutoparkkiAccessUrl()` accepts only HTTPS URLs whose host is `autoparkki.fi` or a subdomain and whose path starts with `/access/`.
 5. When a door URL is saved, `AutoparkkiOpener.suggestDoorName()` may GET the page and derive a readable door name from the legacy page text.
 6. The Vehicle card opens saved-plate selection, and its menu can add, edit, or delete plate profiles.
 7. `OPEN DOOR` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
@@ -74,7 +73,7 @@ Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyy
 
 `AutoparkkiOpener.openDoor()` mirrors the legacy autoparkki webpage workflow:
 
-1. Validate that the stored access URL starts with `https://`.
+1. Validate that the stored access URL is an HTTPS EuroPark/autoparkki `/access/` URL.
 2. Normalize the selected license plate to uppercase.
 3. Send `GET` to the stored access URL.
 4. Parse the first HTML `<form>` from the returned page.
@@ -109,6 +108,27 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.3.8
+
+- Migrated the Gradle Kotlin JVM target configuration away from deprecated `kotlinOptions`.
+- Removed the stale Step UI screenshot from the README until a current screenshot is added for release.
+- Updated Developer mode documentation and repaired the Finnish safety summary encoding.
+
+### 0.3.7
+
+- Replaced static QR scan handoff state with Activity Result API result delivery.
+- Added local profile JSON read recovery for corrupted saved door or vehicle data.
+
+### 0.3.6
+
+- Applied the same EuroPark/autoparkki access URL validation to scanned, manually added, edited, and opened door profiles.
+- Removed license plate values from opener result messages.
+- Scoped request cookies to one opener flow and host.
+
+### 0.3.5
+
+- Fixed Android lint blockers for CameraX image access and camera hardware feature declaration.
 
 ### 0.3.4
 
