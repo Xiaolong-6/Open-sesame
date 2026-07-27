@@ -229,17 +229,17 @@ internal fun MainActivity.showInstructions() {
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(22), dp(22), dp(22), dp(14))
-        background = rounded(UiColors.Card, dp(20))
+        setPadding(dp(22), dp(24), dp(22), dp(16))
+        background = rounded(UiColors.Bg, 0)
     }
 
     content.addView(TextView(this).apply {
-        text = getString(R.string.quick_opener)
-        textSize = 22f
+        text = getString(R.string.settings)
+        textSize = 24f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Text)
         includeFontPadding = false
-        setPadding(0, 0, 0, dp(12))
+        setPadding(0, 0, 0, dp(8))
     })
 
     content.addView(TextView(this).apply {
@@ -247,6 +247,7 @@ internal fun MainActivity.showInstructions() {
         textSize = 14f
         setTextColor(UiColors.Muted)
         setLineSpacing(dp(2).toFloat(), 1.0f)
+        setPadding(0, 0, 0, dp(16))
     })
 
     val developerCheck = TextView(this)
@@ -266,32 +267,70 @@ internal fun MainActivity.showInstructions() {
 
     val actionList = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(0, dp(14), 0, dp(8))
+        setPadding(0, 0, 0, dp(10))
     }
-    actionList.addView(helpActionRow(getString(R.string.share_open_sesame)) {
+    actionList.addView(settingsActionRow(getString(R.string.share_open_sesame)) {
         developerMode = developerChecked
         store.setDeveloperMode(developerChecked)
         helpTapCount = 0
         dialog.dismiss()
         showShareMenu()
     })
-    actionList.addView(helpActionRow(getString(R.string.open_releases_page)) {
+    actionList.addView(settingsActionRow(getString(R.string.open_releases_page)) {
         developerMode = developerChecked
         store.setDeveloperMode(developerChecked)
         helpTapCount = 0
         dialog.dismiss()
         openUrl(ReleaseInfo.RELEASES_URL)
     })
-    actionList.addView(helpToggleRow(getString(R.string.developer_mode), developerCheck) {
+    actionList.addView(settingsToggleRow(getString(R.string.developer_mode), developerCheck) {
         developerChecked = !developerChecked
         updateDeveloperCheck()
+        developerMode = developerChecked
+        store.setDeveloperMode(developerChecked)
+        dialog.dismiss()
+        render()
+        showInstructions()
     })
     content.addView(actionList)
+
+    if (developerChecked) {
+        content.addView(TextView(this).apply {
+            text = getString(R.string.developer_tools)
+            textSize = 12f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(UiColors.Muted)
+            includeFontPadding = false
+            setPadding(0, dp(8), 0, dp(8))
+        })
+
+        val developerList = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 0, 0, dp(10))
+        }
+        developerList.addView(settingsActionRow(getString(R.string.language)) {
+            dialog.dismiss()
+            showLanguageMenu()
+        })
+        developerList.addView(settingsActionRow(getString(R.string.debug)) {
+            dialog.dismiss()
+            debugFetch()
+        })
+        developerList.addView(settingsActionRow(getString(R.string.update)) {
+            dialog.dismiss()
+            openUrl(ReleaseInfo.RELEASES_URL)
+        })
+        developerList.addView(settingsActionRow(getString(R.string.reset), destructive = true) {
+            dialog.dismiss()
+            clearAll()
+        })
+        content.addView(developerList)
+    }
 
     val footer = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        setPadding(0, dp(6), 0, 0)
+        setPadding(0, dp(4), 0, 0)
     }
 
     footer.addView(TextView(this).apply {
@@ -323,43 +362,46 @@ internal fun MainActivity.showInstructions() {
     dialog.show()
     dialog.window?.apply {
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        setLayout((resources.displayMetrics.widthPixels * 0.86f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        setLayout((resources.displayMetrics.widthPixels * 0.9f).toInt(), ViewGroup.LayoutParams.MATCH_PARENT)
+        setGravity(Gravity.RIGHT)
     }
 }
 
-private fun MainActivity.helpActionRow(label: String, onClick: () -> Unit): LinearLayout {
+private fun MainActivity.settingsActionRow(label: String, destructive: Boolean = false, onClick: () -> Unit): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        setPadding(0, dp(12), 0, dp(12))
+        setPadding(dp(14), dp(14), dp(10), dp(14))
+        background = rounded(UiColors.Card, dp(14))
         setOnClickListener { onClick() }
+        layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, 0, 0, dp(8))
+        }
 
-        addView(TextView(this@helpActionRow).apply {
+        addView(TextView(this@settingsActionRow).apply {
             text = label
             textSize = 15f
-            setTextColor(UiColors.Text)
+            setTextColor(if (destructive) UiColors.Danger else UiColors.Text)
             setTypeface(null, Typeface.BOLD)
             includeFontPadding = false
         }, LinearLayout.LayoutParams(0, -2, 1f))
 
-        addView(TextView(this@helpActionRow).apply {
-            text = ">"
-            textSize = 24f
-            setTextColor(UiColors.Muted)
-            gravity = Gravity.CENTER
-            includeFontPadding = false
-        }, LinearLayout.LayoutParams(dp(28), dp(28)))
+        addView(CardActionIconView(this@settingsActionRow, CardActionIcon.Chevron), LinearLayout.LayoutParams(dp(30), dp(30)))
     }
 }
 
-private fun MainActivity.helpToggleRow(label: String, checkView: TextView, onClick: () -> Unit): LinearLayout {
+private fun MainActivity.settingsToggleRow(label: String, checkView: TextView, onClick: () -> Unit): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        setPadding(0, dp(12), 0, dp(12))
+        setPadding(dp(14), dp(14), dp(14), dp(14))
+        background = rounded(UiColors.Card, dp(14))
         setOnClickListener { onClick() }
+        layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, 0, 0, dp(8))
+        }
 
-        addView(TextView(this@helpToggleRow).apply {
+        addView(TextView(this@settingsToggleRow).apply {
             text = label
             textSize = 15f
             setTextColor(UiColors.Text)

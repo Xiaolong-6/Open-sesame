@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.4`
+- App version: `0.4.5`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.5
+
+- Replaced the top Help button with a hamburger-style settings entry.
+- Moved sharing, release link, Developer mode, language, debug, update, and reset into a right-side full-height settings panel.
+- Removed the Advanced controls from the main screen.
 
 ### 0.4.4
 

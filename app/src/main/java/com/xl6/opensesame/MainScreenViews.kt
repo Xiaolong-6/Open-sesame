@@ -20,12 +20,7 @@ fun MainActivity.headerView(onHelp: () -> Unit): LinearLayout {
             includeFontPadding = false
         }, LinearLayout.LayoutParams(0, -2, 1f))
 
-        addView(TextView(this@headerView).apply {
-            text = "?"
-            textSize = 19f
-            setTextColor(UiColors.Text)
-            gravity = Gravity.CENTER
-            setTypeface(null, Typeface.BOLD)
+        addView(CardActionIconView(this@headerView, CardActionIcon.Hamburger).apply {
             background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(22), dp(1))
             setOnClickListener { onHelp() }
         }, LinearLayout.LayoutParams(dp(44), dp(44)))

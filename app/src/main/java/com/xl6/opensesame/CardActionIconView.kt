@@ -7,7 +7,8 @@ import android.view.View
 
 enum class CardActionIcon {
     Chevron,
-    Menu
+    Menu,
+    Hamburger
 }
 
 class CardActionIconView(context: Context, private val icon: CardActionIcon) : View(context) {
@@ -36,6 +37,13 @@ class CardActionIconView(context: Context, private val icon: CardActionIcon) : V
                 canvas.drawCircle(cx, cy - size * 0.16f, radius, paint)
                 canvas.drawCircle(cx, cy, radius, paint)
                 canvas.drawCircle(cx, cy + size * 0.16f, radius, paint)
+            }
+            CardActionIcon.Hamburger -> {
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = size * 0.075f
+                canvas.drawLine(cx - size * 0.2f, cy - size * 0.15f, cx + size * 0.2f, cy - size * 0.15f, paint)
+                canvas.drawLine(cx - size * 0.2f, cy, cx + size * 0.2f, cy, paint)
+                canvas.drawLine(cx - size * 0.2f, cy + size * 0.15f, cx + size * 0.2f, cy + size * 0.15f, paint)
             }
         }
     }

@@ -161,15 +161,6 @@ class MainActivity : ComponentActivity() {
         }
         layout.addView(messageText)
 
-        if (developerMode) {
-            layout.addView(advancedSectionView(
-                onDebug = { debugFetch() },
-                onLanguage = { showLanguageMenu() },
-                onUpdate = { openUrl(ReleaseInfo.RELEASES_URL) },
-                onReset = { clearAll() },
-            ))
-        }
-
         layout.addView(TextView(this).apply {
             text = ReleaseInfo.displayVersion
             textSize = 12f
