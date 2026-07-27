@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -22,6 +23,7 @@ class QrScannerActivity : ComponentActivity() {
 
     private var locked = false
 
+    @ExperimentalGetImage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +44,7 @@ class QrScannerActivity : ComponentActivity() {
         startCamera(previewView)
     }
 
+    @ExperimentalGetImage
     private fun startCamera(previewView: PreviewView) {
         val providerFuture = ProcessCameraProvider.getInstance(this)
 
