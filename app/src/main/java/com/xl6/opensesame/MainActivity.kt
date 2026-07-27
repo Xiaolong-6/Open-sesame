@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         val scanned = QrScannerActivity.lastScannedText
         if (!scanned.isNullOrBlank()) {
             QrScannerActivity.lastScannedText = null
-            val url = extractAutoparkkiUrl(scanned)
+            val url = normalizeAutoparkkiAccessUrl(scanned)
             if (url == null) {
                 showMessage("Invalid QR content.", "TRY AGAIN", UiColors.Danger)
             } else {
@@ -170,7 +170,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.5"
+            text = "v0.3.6"
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -200,6 +200,12 @@ class MainActivity : ComponentActivity() {
 
         if (plate == null) {
             showMessage("No vehicle selected.", "TRY AGAIN", UiColors.Danger)
+            vibrateFailure()
+            return
+        }
+
+        if (normalizeAutoparkkiAccessUrl(door.accessUrl) == null) {
+            showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
             vibrateFailure()
             return
         }
@@ -278,7 +284,7 @@ class MainActivity : ComponentActivity() {
         })
     }
 
-    private fun extractAutoparkkiUrl(raw: String): String? {
+    internal fun normalizeAutoparkkiAccessUrl(raw: String): String? {
         val match = Regex("""https?://[^\s"'<>]+""", RegexOption.IGNORE_CASE).find(raw.trim())
         val url = (match?.value ?: raw.trim())
 
@@ -290,7 +296,7 @@ class MainActivity : ComponentActivity() {
                 (host == "autoparkki.fi" || host.endsWith(".autoparkki.fi")) &&
                 parsed.path?.startsWith("/access/") == true
             ) {
-                url
+                parsed.toString()
             } else null
         } catch (_: Exception) {
             null

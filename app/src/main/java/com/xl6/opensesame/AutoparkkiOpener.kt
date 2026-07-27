@@ -10,21 +10,20 @@ import java.net.URLEncoder
 import java.util.Locale
 
 class AutoparkkiOpener {
-    private val cookies = mutableMapOf<String, String>()
-
     fun openDoor(door: DoorProfile, plate: PlateProfile): OpenResult {
         val accessUrl = door.accessUrl.trim()
         val plateNumber = plate.plateNumber.trim().uppercase(Locale.ROOT)
+        val cookies = mutableMapOf<String, String>()
 
-        if (!accessUrl.startsWith("https://")) {
-            return OpenResult(false, "Garage access URL must start with https://.")
+        if (!isAutoparkkiAccessUrl(accessUrl)) {
+            return OpenResult(false, "Invalid EuroPark access URL.")
         }
 
         if (plateNumber.isBlank()) {
             return OpenResult(false, "License plate is missing.")
         }
 
-        val get = request("GET", accessUrl, null, null)
+        val get = request("GET", accessUrl, null, null, cookies)
         if (!get.okHttp) {
             return OpenResult(false, "Access page GET failed with HTTP ${get.status}.", get.status, get.body.take(500))
         }
@@ -53,22 +52,25 @@ class AutoparkkiOpener {
         }
 
         val target = absoluteUrl(form.action, get.finalUrl ?: accessUrl)
+        if (!isAutoparkkiUrl(target)) {
+            return OpenResult(false, "Access form target is not supported.", get.status, get.body.take(500))
+        }
         val body = encodeForm(params)
 
         val submitResult =
             if (form.method.equals("GET", ignoreCase = true)) {
                 val separator = if (target.contains("?")) "&" else "?"
-                request("GET", "$target$separator$body", null, get.finalUrl ?: accessUrl)
+                request("GET", "$target$separator$body", null, get.finalUrl ?: accessUrl, cookies)
             } else {
-                request("POST", target, body, get.finalUrl ?: accessUrl)
+                request("POST", target, body, get.finalUrl ?: accessUrl, cookies)
             }
 
         val semantic = responseLooksSuccessful(submitResult.body)
         val ok = submitResult.okHttp && semantic != false
 
         val message = when {
-            semantic == true -> "Door request accepted for $plateNumber."
-            submitResult.okHttp -> "Door request sent for $plateNumber. Please verify the door."
+            semantic == true -> "Door request accepted."
+            submitResult.okHttp -> "Door request sent. Please verify the door."
             else -> "Door request failed with HTTP ${submitResult.status}."
         }
 
@@ -77,7 +79,8 @@ class AutoparkkiOpener {
 
     fun suggestDoorName(accessUrl: String): String {
         return try {
-            val res = request("GET", accessUrl.trim(), null, null)
+            if (!isAutoparkkiAccessUrl(accessUrl.trim())) return fallbackName(accessUrl)
+            val res = request("GET", accessUrl.trim(), null, null, mutableMapOf())
             val plain = stripHtml(res.body)
             extractDoorNameFromPlainText(plain) ?: fallbackName(accessUrl)
         } catch (_: Exception) {
@@ -87,7 +90,8 @@ class AutoparkkiOpener {
 
     fun debugAccessInfo(accessUrl: String): String {
         return try {
-            val res = request("GET", accessUrl.trim(), null, null)
+            if (!isAutoparkkiAccessUrl(accessUrl.trim())) return "Current door webpage info\nUnsupported EuroPark access URL."
+            val res = request("GET", accessUrl.trim(), null, null, mutableMapOf())
             val plain = stripHtml(res.body)
             val form = parseForm(res.body)
             val suggestedName = extractDoorNameFromPlainText(plain) ?: fallbackName(accessUrl)
@@ -188,18 +192,28 @@ class AutoparkkiOpener {
         val controls: List<Control>
     )
 
-    private fun request(method: String, urlText: String, body: String?, referer: String?): HttpResult {
+    private fun request(
+        method: String,
+        urlText: String,
+        body: String?,
+        referer: String?,
+        cookies: MutableMap<String, String>
+    ): HttpResult {
         val conn = (URL(urlText).openConnection() as HttpURLConnection)
+        val host = conn.url.host.lowercase(Locale.ROOT)
         conn.requestMethod = method
         conn.instanceFollowRedirects = true
         conn.connectTimeout = 10000
         conn.readTimeout = 10000
         conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-        conn.setRequestProperty("User-Agent", "Open-Sesame/0.3.5")
+        conn.setRequestProperty("User-Agent", "Open-Sesame/0.3.6")
         referer?.let { conn.setRequestProperty("Referer", it) }
 
-        if (cookies.isNotEmpty()) {
-            conn.setRequestProperty("Cookie", cookies.entries.joinToString("; ") { "${it.key}=${it.value}" })
+        val hostCookies = cookies.entries
+            .filter { it.key.startsWith("$host|") }
+            .joinToString("; ") { "${it.key.substringAfter('|')}=${it.value}" }
+        if (hostCookies.isNotBlank()) {
+            conn.setRequestProperty("Cookie", hostCookies)
         }
 
         if (method == "POST") {
@@ -209,8 +223,9 @@ class AutoparkkiOpener {
         }
 
         val status = conn.responseCode
+        val responseHost = conn.url.host.lowercase(Locale.ROOT)
         conn.headerFields["Set-Cookie"]?.forEach { raw ->
-            HttpCookie.parse(raw).forEach { cookies[it.name] = it.value }
+            HttpCookie.parse(raw).forEach { cookies["$responseHost|${it.name}"] = it.value }
         }
 
         val stream = if (status in 200..399) conn.inputStream else conn.errorStream
@@ -261,6 +276,31 @@ class AutoparkkiOpener {
     private fun absoluteUrl(action: String?, base: String): String {
         if (action.isNullOrBlank()) return base
         return URI(base).resolve(action).toString()
+    }
+
+    private fun isAutoparkkiAccessUrl(urlText: String): Boolean {
+        return try {
+            val url = URL(urlText)
+            url.protocol.equals("https", ignoreCase = true) &&
+                isAutoparkkiHost(url.host) &&
+                url.path.startsWith("/access/")
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun isAutoparkkiUrl(urlText: String): Boolean {
+        return try {
+            val url = URL(urlText)
+            url.protocol.equals("https", ignoreCase = true) && isAutoparkkiHost(url.host)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun isAutoparkkiHost(host: String): Boolean {
+        val normalized = host.lowercase(Locale.ROOT)
+        return normalized == "autoparkki.fi" || normalized.endsWith(".autoparkki.fi")
     }
 
     private fun encodeForm(params: Map<String, String>): String {

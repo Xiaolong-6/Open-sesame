@@ -71,7 +71,11 @@ internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
         .setView(container)
         .setNegativeButton("Cancel", null)
         .setPositiveButton("Save") { _, _ ->
-            val url = urlInput.text.toString().trim()
+            val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
+            if (url == null) {
+                showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
+                return@setPositiveButton
+            }
             val name = nameInput.text.toString().trim().ifBlank { "EuroPark (autoparkki) door" }
             val profile = DoorProfile(store.newId("door"), name, url)
             doors.add(profile)
@@ -101,10 +105,15 @@ internal fun MainActivity.editDoorDialog(door: DoorProfile) {
         .setView(container)
         .setNegativeButton("Cancel", null)
         .setPositiveButton("Save") { _, _ ->
+            val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
+            if (url == null) {
+                showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
+                return@setPositiveButton
+            }
             doors = doors.map {
                 if (it.id == door.id) it.copy(
                     name = nameInput.text.toString(),
-                    accessUrl = urlInput.text.toString()
+                    accessUrl = url
                 ) else it
             }.toMutableList()
             store.saveDoors(doors)
@@ -250,7 +259,7 @@ internal fun MainActivity.showInstructions() {
     content.addView(developerModeCheckbox)
 
     content.addView(TextView(this).apply {
-        text = "v0.3.5"
+        text = "v0.3.6"
         textSize = 12f
         setTextColor(UiColors.Muted)
         gravity = Gravity.CENTER
@@ -304,7 +313,7 @@ internal fun MainActivity.showInstructions() {
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.5")
+        appendLine("Version: 0.3.6")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")
