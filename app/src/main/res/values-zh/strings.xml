@@ -42,9 +42,9 @@
     <string name="update">更新</string>
     <string name="share">分享</string>
     <string name="share_open_sesame">分享 Open-Sesame</string>
-    <string name="show_qr_code">显示二维码</string>
-    <string name="share_release_link">分享到其他应用</string>
-    <string name="open_releases_page">打开发布页</string>
+    <string name="show_qr_code">二维码</string>
+    <string name="share_release_link">分享链接</string>
+    <string name="open_releases_page">发布页</string>
     <string name="release_qr_title">Open-Sesame 发布页</string>
     <string name="release_qr_body">扫描此二维码打开公开发布页。</string>
     <string name="close">关闭</string>
@@ -61,6 +61,8 @@
     <string name="version_label">版本 %1$s</string>
     <string name="help_body">在本机保存已授权的门和车辆。点击开门发送请求。\n\n请始终确认实体门是否打开。</string>
     <string name="developer_mode">开发者模式</string>
+    <string name="on">开启</string>
+    <string name="off">关闭</string>
     <string name="advanced">高级</string>
     <string name="debug">调试</string>
     <string name="language">语言</string>
@@ -69,6 +71,7 @@
     <string name="finnish">芬兰语</string>
     <string name="chinese">中文</string>
     <string name="reset_app_data_question">重置应用数据？</string>
+    <string name="reset_app_data">重置应用数据</string>
     <string name="reset_app_data_message">这会从本机删除所有门链接和车牌。</string>
     <string name="scan_europark_qr">扫描 EuroPark (autoparkki) 二维码</string>
 </resources>

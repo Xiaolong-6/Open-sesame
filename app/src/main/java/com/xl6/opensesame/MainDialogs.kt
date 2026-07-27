@@ -246,12 +246,7 @@ internal fun MainActivity.showInstructions() {
         setTextColor(UiColors.Text)
         includeFontPadding = false
     }, LinearLayout.LayoutParams(0, -2, 1f))
-    header.addView(TextView(this).apply {
-        text = "X"
-        textSize = 16f
-        setTypeface(null, Typeface.BOLD)
-        setTextColor(UiColors.Text)
-        gravity = Gravity.CENTER
+    header.addView(CardActionIconView(this, CardActionIcon.Close).apply {
         background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(22), dp(1))
         setOnClickListener {
             developerMode = developerChecked
@@ -283,66 +278,67 @@ internal fun MainActivity.showInstructions() {
 
     val developerCheck = TextView(this)
     fun updateDeveloperCheck() {
-        developerCheck.text = if (developerChecked) "ON" else ""
-        developerCheck.setTextColor(Color.WHITE)
+        developerCheck.text = if (developerChecked) getString(R.string.on) else getString(R.string.off)
+        developerCheck.setTextColor(if (developerChecked) UiColors.Green else UiColors.Muted)
         developerCheck.gravity = Gravity.CENTER
         developerCheck.textSize = 15f
         developerCheck.setTypeface(null, Typeface.BOLD)
-        developerCheck.background = if (developerChecked) {
-            rounded(UiColors.Green, dp(6))
-        } else {
-            roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(6), dp(2))
-        }
+        developerCheck.background = null
     }
     updateDeveloperCheck()
 
-    content.addView(settingsSectionTitle(getString(R.string.preferences)))
-    content.addView(settingsActionRow(getString(R.string.language)) {
-        dialog.dismiss()
-        showLanguageMenu()
-    })
-
-    content.addView(settingsSectionTitle(getString(R.string.share_section)))
-    content.addView(settingsActionRow(getString(R.string.show_qr_code)) {
-        dialog.dismiss()
-        showReleaseQrDialog()
-    })
-    content.addView(settingsActionRow(getString(R.string.share_release_link)) {
-        dialog.dismiss()
-        shareReleaseLink()
-    })
-
-    content.addView(settingsSectionTitle(getString(R.string.about)))
-    content.addView(settingsActionRow(getString(R.string.open_releases_page)) {
-        dialog.dismiss()
-        openUrl(ReleaseInfo.RELEASES_URL)
-    })
-    content.addView(settingsStaticRow(getString(R.string.version_label, ReleaseInfo.VERSION_NAME)))
-
-    content.addView(settingsSectionTitle(getString(R.string.developer_mode)))
-    content.addView(settingsToggleRow(getString(R.string.developer_mode), developerCheck) {
-        developerChecked = !developerChecked
-        updateDeveloperCheck()
-        developerMode = developerChecked
-        store.setDeveloperMode(developerChecked)
-        dialog.dismiss()
-        render()
-        showInstructions()
-    })
-
-    if (developerChecked) {
-        content.addView(settingsSectionTitle(getString(R.string.developer_tools)))
-        content.addView(settingsActionRow(getString(R.string.debug)) {
+    content.addView(settingsSectionCard(getString(R.string.preferences)) {
+        addView(settingsActionRow(getString(R.string.language), showDivider = false) {
             dialog.dismiss()
-            debugFetch()
+            showLanguageMenu()
         })
-        content.addView(settingsActionRow(getString(R.string.update)) {
+    })
+
+    content.addView(settingsSectionCard(getString(R.string.share_section)) {
+        addView(settingsActionRow(getString(R.string.show_qr_code)) {
+            dialog.dismiss()
+            showReleaseQrDialog()
+        })
+        addView(settingsActionRow(getString(R.string.share_release_link), showDivider = false) {
+            dialog.dismiss()
+            shareReleaseLink()
+        })
+    })
+
+    content.addView(settingsSectionCard(getString(R.string.about)) {
+        addView(settingsActionRow(getString(R.string.open_releases_page)) {
             dialog.dismiss()
             openUrl(ReleaseInfo.RELEASES_URL)
         })
-        content.addView(settingsActionRow(getString(R.string.reset_app_data_question), destructive = true) {
+        addView(settingsStaticRow(getString(R.string.version_label, ReleaseInfo.VERSION_NAME), showDivider = false))
+    })
+
+    content.addView(settingsSectionCard(getString(R.string.developer_mode)) {
+        addView(settingsToggleRow(getString(R.string.developer_mode), developerCheck, showDivider = false) {
+            developerChecked = !developerChecked
+            updateDeveloperCheck()
+            developerMode = developerChecked
+            store.setDeveloperMode(developerChecked)
             dialog.dismiss()
-            clearAll()
+            render()
+            showInstructions()
+        })
+    })
+
+    if (developerChecked) {
+        content.addView(settingsSectionCard(getString(R.string.developer_tools)) {
+            addView(settingsActionRow(getString(R.string.debug)) {
+                dialog.dismiss()
+                debugFetch()
+            })
+            addView(settingsActionRow(getString(R.string.update)) {
+                dialog.dismiss()
+                openUrl(ReleaseInfo.RELEASES_URL)
+            })
+            addView(settingsActionRow(getString(R.string.reset_app_data), destructive = true, showDivider = false) {
+                dialog.dismiss()
+                clearAll()
+            })
         })
     }
 
@@ -356,78 +352,92 @@ internal fun MainActivity.showInstructions() {
     }
 }
 
-private fun MainActivity.settingsSectionTitle(label: String): TextView {
-    return TextView(this).apply {
-        text = label
-        textSize = 12f
-        setTypeface(null, Typeface.BOLD)
-        setTextColor(UiColors.Muted)
-        includeFontPadding = false
-        setPadding(0, dp(16), 0, dp(8))
-    }
-}
-
-private fun MainActivity.settingsActionRow(label: String, destructive: Boolean = false, onClick: () -> Unit): LinearLayout {
+private fun MainActivity.settingsSectionCard(title: String, content: LinearLayout.() -> Unit): LinearLayout {
     return LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(14), dp(14), dp(10), dp(14))
+        orientation = LinearLayout.VERTICAL
         background = rounded(UiColors.Card, dp(14))
-        setOnClickListener { onClick() }
         layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, 0, 0, dp(8))
+            setMargins(0, 0, 0, dp(14))
         }
-
-        addView(TextView(this@settingsActionRow).apply {
-            text = label
-            textSize = 15f
-            setTextColor(if (destructive) UiColors.Danger else UiColors.Text)
+        addView(TextView(this@settingsSectionCard).apply {
+            text = title
+            textSize = 12f
             setTypeface(null, Typeface.BOLD)
-            includeFontPadding = false
-        }, LinearLayout.LayoutParams(0, -2, 1f))
-
-        addView(CardActionIconView(this@settingsActionRow, CardActionIcon.Chevron), LinearLayout.LayoutParams(dp(30), dp(30)))
-    }
-}
-
-private fun MainActivity.settingsStaticRow(label: String): LinearLayout {
-    return LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(14), dp(14), dp(14), dp(14))
-        background = rounded(UiColors.Card, dp(14))
-        layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, 0, 0, dp(8))
-        }
-
-        addView(TextView(this@settingsStaticRow).apply {
-            text = label
-            textSize = 15f
             setTextColor(UiColors.Muted)
             includeFontPadding = false
-        }, LinearLayout.LayoutParams(0, -2, 1f))
+            setPadding(dp(14), dp(14), dp(14), dp(4))
+        })
+        content()
     }
 }
 
-private fun MainActivity.settingsToggleRow(label: String, checkView: TextView, onClick: () -> Unit): LinearLayout {
+private fun MainActivity.settingsActionRow(
+    label: String,
+    destructive: Boolean = false,
+    showDivider: Boolean = true,
+    onClick: () -> Unit
+): LinearLayout {
+    return settingsBaseRow(label, showDivider, onClick, destructive = destructive) {
+        addView(CardActionIconView(this@settingsActionRow, CardActionIcon.Chevron), LinearLayout.LayoutParams(dp(28), dp(28)))
+    }
+}
+
+private fun MainActivity.settingsStaticRow(label: String, showDivider: Boolean = true): LinearLayout {
+    return settingsBaseRow(label, showDivider, null, muted = true)
+}
+
+private fun MainActivity.settingsToggleRow(
+    label: String,
+    checkView: TextView,
+    showDivider: Boolean = true,
+    onClick: () -> Unit
+): LinearLayout {
+    return settingsBaseRow(label, showDivider, onClick) {
+        addView(checkView, LinearLayout.LayoutParams(dp(44), dp(28)))
+    }
+}
+
+private fun MainActivity.settingsBaseRow(
+    label: String,
+    showDivider: Boolean,
+    onClick: (() -> Unit)?,
+    destructive: Boolean = false,
+    muted: Boolean = false,
+    trailing: (LinearLayout.() -> Unit)? = null
+): LinearLayout {
     return LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(14), dp(14), dp(14), dp(14))
-        background = rounded(UiColors.Card, dp(14))
-        setOnClickListener { onClick() }
-        layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, 0, 0, dp(8))
+        orientation = LinearLayout.VERTICAL
+        onClick?.let { click -> setOnClickListener { click() } }
+
+        val row = LinearLayout(this@settingsBaseRow).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(14), dp(11), dp(12), dp(11))
         }
 
-        addView(TextView(this@settingsToggleRow).apply {
+        row.addView(TextView(this@settingsBaseRow).apply {
             text = label
             textSize = 15f
-            setTextColor(UiColors.Text)
+            setTextColor(when {
+                destructive -> UiColors.Danger
+                muted -> UiColors.Muted
+                else -> UiColors.Text
+            })
+            setTypeface(null, if (muted) Typeface.NORMAL else Typeface.BOLD)
             includeFontPadding = false
         }, LinearLayout.LayoutParams(0, -2, 1f))
 
-        addView(checkView, LinearLayout.LayoutParams(dp(24), dp(24)))
+        trailing?.invoke(row)
+        addView(row)
+
+        if (showDivider) {
+            addView(android.view.View(this@settingsBaseRow).apply {
+                setBackgroundColor(UiColors.BorderSoft)
+                alpha = 0.55f
+            }, LinearLayout.LayoutParams(-1, dp(1)).apply {
+                setMargins(dp(14), 0, dp(14), 0)
+            })
+        }
     }
 }
 

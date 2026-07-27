@@ -42,9 +42,9 @@
     <string name="update">UPDATE</string>
     <string name="share">SHARE</string>
     <string name="share_open_sesame">Share Open-Sesame</string>
-    <string name="show_qr_code">Show QR code</string>
-    <string name="share_release_link">Share release link</string>
-    <string name="open_releases_page">Open releases page</string>
+    <string name="show_qr_code">QR code</string>
+    <string name="share_release_link">Share link</string>
+    <string name="open_releases_page">Releases</string>
     <string name="release_qr_title">Open-Sesame release</string>
     <string name="release_qr_body">Scan this code to open the public release page.</string>
     <string name="close">Close</string>
@@ -61,14 +61,17 @@
     <string name="version_label">Version %1$s</string>
     <string name="help_body">Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door.</string>
     <string name="developer_mode">Developer mode</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
     <string name="advanced">Advanced</string>
     <string name="debug">DEBUG</string>
-    <string name="language">LANGUAGE</string>
+    <string name="language">Language</string>
     <string name="system_language">System language</string>
     <string name="english">English</string>
     <string name="finnish">Finnish</string>
     <string name="chinese">Chinese</string>
     <string name="reset_app_data_question">Reset app data?</string>
+    <string name="reset_app_data">Reset app data</string>
     <string name="reset_app_data_message">This deletes all local door URLs and license plates from this phone.</string>
     <string name="scan_europark_qr">Scan EuroPark (autoparkki) QR</string>
 </resources>

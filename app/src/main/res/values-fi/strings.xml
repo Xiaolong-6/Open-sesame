@@ -42,9 +42,9 @@
     <string name="update">PÄIVITÄ</string>
     <string name="share">JAA</string>
     <string name="share_open_sesame">Jaa Open-Sesame</string>
-    <string name="show_qr_code">Näytä QR-koodi</string>
-    <string name="share_release_link">Jaa julkaisulinkki</string>
-    <string name="open_releases_page">Avaa julkaisusivu</string>
+    <string name="show_qr_code">QR-koodi</string>
+    <string name="share_release_link">Jaa linkki</string>
+    <string name="open_releases_page">Julkaisut</string>
     <string name="release_qr_title">Open-Sesame-julkaisu</string>
     <string name="release_qr_body">Skannaa koodi avataksesi julkisen julkaisusivun.</string>
     <string name="close">Sulje</string>
@@ -61,14 +61,17 @@
     <string name="version_label">Versio %1$s</string>
     <string name="help_body">Tallenna valtuutettu ovi ja ajoneuvo paikallisesti. Lähetä pyyntö napauttamalla AVAA OVI.\n\nTarkista aina fyysinen ovi.</string>
     <string name="developer_mode">Kehittäjätila</string>
+    <string name="on">Käytössä</string>
+    <string name="off">Pois</string>
     <string name="advanced">Lisäasetukset</string>
     <string name="debug">DEBUG</string>
-    <string name="language">KIELI</string>
+    <string name="language">Kieli</string>
     <string name="system_language">Järjestelmän kieli</string>
     <string name="english">Englanti</string>
     <string name="finnish">Suomi</string>
     <string name="chinese">Kiina</string>
     <string name="reset_app_data_question">Nollataanko sovelluksen tiedot?</string>
+    <string name="reset_app_data">Nollaa sovelluksen tiedot</string>
     <string name="reset_app_data_message">Tämä poistaa kaikki paikalliset oven URL-osoitteet ja rekisterinumerot tästä puhelimesta.</string>
     <string name="scan_europark_qr">Skannaa EuroPark (autoparkki) QR</string>
 </resources>

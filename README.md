@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.6`
+- App version: `0.4.7`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.7
+
+- Polished Settings into quieter section cards with lighter rows.
+- Replaced the text close button with a drawn close icon.
+- Shortened Settings row labels for QR code, share link, releases, language, and reset.
 
 ### 0.4.6
 
