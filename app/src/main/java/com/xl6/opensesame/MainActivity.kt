@@ -102,12 +102,12 @@ class MainActivity : ComponentActivity() {
         root.addView(layout)
         setContentView(root)
 
-        layout.addView(header())
-        layout.addView(statusBar(), LinearLayout.LayoutParams(-1, -2).apply {
+        layout.addView(headerView { showInstructions() })
+        layout.addView(statusBarView(isOpening) { statusText = it }, LinearLayout.LayoutParams(-1, -2).apply {
             setMargins(0, dp(12), 0, dp(12))
         })
 
-        layout.addView(profileCard(
+        layout.addView(profileCardView(
             title = "Door",
             value = activeDoor()?.name ?: "No door saved",
             empty = activeDoor() == null,
@@ -117,7 +117,7 @@ class MainActivity : ComponentActivity() {
             onMenu = { showDoorMenu() },
         ))
 
-        layout.addView(profileCard(
+        layout.addView(profileCardView(
             title = "Vehicle",
             value = activePlate()?.plateNumber ?: "No vehicle saved",
             empty = activePlate() == null,
@@ -154,7 +154,11 @@ class MainActivity : ComponentActivity() {
         layout.addView(messageText)
 
         if (developerMode) {
-            layout.addView(advancedSection())
+            layout.addView(advancedSectionView(
+                onDebug = { debugFetch() },
+                onUpdate = { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
+                onReset = { clearAll() },
+            ))
         }
 
         layout.addView(TextView(this).apply {
@@ -165,162 +169,6 @@ class MainActivity : ComponentActivity() {
             setPadding(0, dp(8), 0, 0)
             setOnClickListener { unlockDeveloperMode() }
         })
-    }
-
-    private fun header(): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-
-            addView(TextView(this@MainActivity).apply {
-                text = "Open-Sesame"
-                textSize = 30f
-                setTextColor(UiColors.Text)
-                setTypeface(null, Typeface.BOLD)
-                includeFontPadding = false
-            }, LinearLayout.LayoutParams(0, -2, 1f))
-
-            addView(TextView(this@MainActivity).apply {
-                text = "?"
-                textSize = 19f
-                setTextColor(UiColors.Text)
-                gravity = Gravity.CENTER
-                setTypeface(null, Typeface.BOLD)
-                background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(22), dp(1))
-                setOnClickListener { showInstructions() }
-            }, LinearLayout.LayoutParams(dp(44), dp(44)))
-        }
-    }
-
-    private fun statusBar(): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(10), dp(14), dp(10))
-            background = rounded(UiColors.GreenSoft, dp(14))
-
-            statusText = TextView(this@MainActivity).apply {
-                text = if (isOpening) "Sending request..." else "Ready to open"
-                textSize = 15f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(if (isOpening) UiColors.Warning else UiColors.Green)
-                includeFontPadding = false
-            }
-            addView(statusText)
-        }
-    }
-
-    private fun profileCard(
-        title: String,
-        value: String,
-        empty: Boolean,
-        emptyAction: String,
-        onClick: () -> Unit,
-        onAction: () -> Unit,
-        onMenu: () -> Unit
-    ): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(14), dp(12), dp(14))
-            background = rounded(UiColors.Card, dp(16))
-            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-                setMargins(0, 0, 0, dp(12))
-            }
-
-            val row = LinearLayout(this@MainActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setOnClickListener { if (empty) onAction() else onClick() }
-            }
-
-            val textBlock = LinearLayout(this@MainActivity).apply {
-                orientation = LinearLayout.VERTICAL
-            }
-
-            textBlock.addView(TextView(this@MainActivity).apply {
-                text = title
-                textSize = 13f
-                setTextColor(UiColors.Muted)
-                includeFontPadding = false
-            })
-
-            textBlock.addView(TextView(this@MainActivity).apply {
-                text = value
-                textSize = 18f
-                setTextColor(if (empty) UiColors.Muted else UiColors.Text)
-                setTypeface(null, if (empty) Typeface.NORMAL else Typeface.BOLD)
-                includeFontPadding = false
-                maxLines = 1
-                setPadding(0, dp(7), 0, 0)
-            })
-
-            row.addView(textBlock, LinearLayout.LayoutParams(0, -2, 1f))
-
-            if (empty) {
-                row.addView(TextView(this@MainActivity).apply {
-                    text = emptyAction
-                    textSize = 13f
-                    setTypeface(null, Typeface.BOLD)
-                    gravity = Gravity.CENTER
-                    setTextColor(Color.WHITE)
-                    background = rounded(UiColors.Green, dp(12))
-                    setPadding(dp(12), dp(10), dp(12), dp(10))
-                    setOnClickListener { onAction() }
-                })
-            } else {
-                row.addView(TextView(this@MainActivity).apply {
-                    text = ">"
-                    textSize = 24f
-                    gravity = Gravity.CENTER
-                    setTextColor(UiColors.Muted)
-                    includeFontPadding = false
-                    setPadding(dp(8), 0, dp(8), 0)
-                })
-                row.addView(TextView(this@MainActivity).apply {
-                    text = "..."
-                    textSize = 18f
-                    gravity = Gravity.CENTER
-                    setTypeface(null, Typeface.BOLD)
-                    setTextColor(UiColors.Muted)
-                    includeFontPadding = false
-                    setOnClickListener { onMenu() }
-                }, LinearLayout.LayoutParams(dp(40), dp(40)))
-            }
-
-            addView(row)
-        }
-    }
-
-    private fun advancedSection(): LinearLayout {
-        return section("Advanced") {
-            addView(actionRow(
-                quietAction("DEBUG") { debugFetch() },
-                quietAction("UPDATE") { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
-                dangerAction("RESET") { clearAll() },
-            ))
-        }
-    }
-
-    private fun section(title: String, content: LinearLayout.() -> Unit): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = rounded(UiColors.Card, dp(16))
-            layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
-                setMargins(0, dp(2), 0, dp(12))
-            }
-
-            addView(TextView(this@MainActivity).apply {
-                text = title
-                textSize = 16f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(UiColors.Text)
-                includeFontPadding = false
-                setPadding(0, 0, 0, dp(10))
-            })
-
-            content()
-        }
     }
 
     private fun showDoorMenu() {
