@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.5.4`
+- App version: `0.5.5`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -66,7 +66,7 @@ Sovellus ei kierrä kulunvalvontaa, ei takaa oven avautumista eikä tarkista fyy
 4. `MainActivity.normalizeAutoparkkiAccessUrl()` accepts only HTTPS URLs whose host is `autoparkki.fi` or a subdomain and whose path starts with `/access/`.
 5. When a door URL is saved, `AutoparkkiOpener.suggestDoorName()` may GET the page and derive a readable door name from the legacy page text.
 6. The Vehicle card adds a plate directly when empty, or opens saved-plate selection when profiles exist.
-7. Door and Vehicle picker rows can be tapped to select, edited with the row edit action, or long-pressed to enter multi-select deletion.
+7. Door and Vehicle picker rows can be tapped to select, or long-pressed to enter selection mode for editing one selected item or deleting selected items.
 8. `OPEN DOOR` calls `MainActivity.openDoor()`, which delegates the request to `AutoparkkiOpener.openDoor(door, plate)` on a worker thread.
 9. Advanced diagnostics are hidden from the default main screen and call `AutoparkkiOpener.debugAccessInfo()` only after developer mode is enabled.
 
@@ -109,6 +109,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.5
+
+- Removed the per-row Edit button from Door and Vehicle pickers.
+- Long-pressing a picker row now enters selection mode with one haptic feedback event.
+- Added Edit selected and Delete selected actions; editing is available only when exactly one row is selected.
 
 ### 0.5.4
 

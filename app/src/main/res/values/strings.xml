@@ -39,6 +39,7 @@
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="edit_selected">Edit selected</string>
     <string name="delete_selected">Delete selected</string>
     <string name="reset">Reset</string>
     <string name="ok">OK</string>

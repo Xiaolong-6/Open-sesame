@@ -1,4 +1,5 @@
 <resources>
+    <string name="edit_selected">Muokkaa valittua</string>
     <string name="delete_selected">Poista valitut</string>
     <string name="edit">Muokkaa</string>
     <string name="registration_number">Syota rekisterinumero</string>

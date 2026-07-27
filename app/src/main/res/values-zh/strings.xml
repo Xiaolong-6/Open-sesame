@@ -1,4 +1,5 @@
 <resources>
+    <string name="edit_selected">编辑选中项</string>
     <string name="delete_selected">删除选中项</string>
     <string name="edit">编辑</string>
     <string name="registration_number">输入车牌号</string>

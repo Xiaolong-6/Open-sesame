@@ -434,7 +434,10 @@ private fun MainActivity.showProfilePickerDialog(
                     renderRows()
                 },
                 onEnterDeleteMode = {
-                    deleteMode = true
+                    if (!deleteMode) {
+                        deleteMode = true
+                        vibrateSelectionMode()
+                    }
                     checkedIds.add(row.id)
                     renderRows()
                 }
@@ -442,22 +445,36 @@ private fun MainActivity.showProfilePickerDialog(
         }
 
         if (deleteMode) {
-            listContainer.addView(TextView(this).apply {
-                text = getString(R.string.delete_selected)
-                textSize = 15f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(Color.WHITE)
-                gravity = Gravity.CENTER
-                includeFontPadding = false
-                alpha = if (checkedIds.isEmpty()) 0.5f else 1f
-                background = rounded(UiColors.Danger, dp(4))
-                setPadding(dp(12), dp(13), dp(12), dp(13))
-                setOnClickListener {
+            listContainer.addView(LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+
+                val selectedRow = rows.firstOrNull { it.id in checkedIds }
+                addView(selectionActionButton(
+                    label = getString(R.string.edit_selected),
+                    enabled = checkedIds.size == 1,
+                    destructive = false
+                ) {
+                    if (checkedIds.size == 1 && selectedRow != null) {
+                        dialog.dismiss()
+                        selectedRow.onEdit()
+                    }
+                }, LinearLayout.LayoutParams(0, dp(46), 1f).apply {
+                    setMargins(0, 0, dp(5), 0)
+                })
+
+                addView(selectionActionButton(
+                    label = getString(R.string.delete_selected),
+                    enabled = checkedIds.isNotEmpty(),
+                    destructive = true
+                ) {
                     if (checkedIds.isNotEmpty()) {
                         dialog.dismiss()
                         onDeleteSelected(checkedIds.toSet())
                     }
-                }
+                }, LinearLayout.LayoutParams(0, dp(46), 1f).apply {
+                    setMargins(dp(5), 0, 0, 0)
+                })
             }, LinearLayout.LayoutParams(-1, -2).apply {
                 setMargins(0, dp(14), 0, 0)
             })
@@ -529,24 +546,18 @@ private fun MainActivity.profilePickerRowView(
                 }
             }
             setOnLongClickListener {
-                onEnterDeleteMode()
+                if (!deleteMode) {
+                    onEnterDeleteMode()
+                }
                 true
             }
         }, LinearLayout.LayoutParams(0, dp(44), 1f))
-
-        if (!deleteMode) {
-            addView(profilePickerSmallAction(getString(R.string.edit)) {
-                dialog.dismiss()
-                item.onEdit()
-            }, LinearLayout.LayoutParams(dp(58), dp(38)).apply {
-                setMargins(dp(6), 0, 0, 0)
-            })
-        }
     }
 }
 
-private fun MainActivity.profilePickerSmallAction(
+private fun MainActivity.selectionActionButton(
     label: String,
+    enabled: Boolean,
     destructive: Boolean = false,
     onClick: () -> Unit
 ): TextView {
@@ -554,17 +565,21 @@ private fun MainActivity.profilePickerSmallAction(
         text = label
         textSize = 12f
         setTypeface(null, Typeface.BOLD)
-        setTextColor(if (destructive) UiColors.Danger else UiColors.Muted)
+        setTextColor(if (destructive) Color.WHITE else UiColors.Green)
         gravity = Gravity.CENTER
         includeFontPadding = false
         setPadding(dp(4), 0, dp(4), 0)
-        background = roundedStroke(
-            if (destructive) UiColors.DangerSoft else UiColors.NeutralSoft,
-            UiColors.BorderSoft,
-            dp(4),
-            dp(1)
-        )
-        setOnClickListener { onClick() }
+        alpha = if (enabled) 1f else 0.45f
+        background = if (destructive) {
+            rounded(UiColors.Danger, dp(4))
+        } else {
+            roundedStroke(UiColors.GreenSoft, UiColors.BorderSoft, dp(4), dp(1))
+        }
+        setOnClickListener {
+            if (enabled) {
+                onClick()
+            }
+        }
     }
 }
 

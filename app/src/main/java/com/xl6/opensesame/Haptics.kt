@@ -21,6 +21,10 @@ fun ComponentActivity.vibrateFailure() {
     vibratePattern(longArrayOf(0, 45, 80, 45), -1)
 }
 
+fun ComponentActivity.vibrateSelectionMode() {
+    window.decorView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+}
+
 private fun ComponentActivity.vibratePattern(pattern: LongArray, repeat: Int) {
     val vibrator = getSystemService(Vibrator::class.java) ?: return
     if (!vibrator.hasVibrator()) return
