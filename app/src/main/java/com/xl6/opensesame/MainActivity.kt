@@ -110,27 +110,27 @@ class MainActivity : ComponentActivity() {
         })
 
         layout.addView(profileCardView(
-            title = "Door",
-            value = activeDoor()?.name ?: "No door saved",
+            title = getString(R.string.door),
+            value = activeDoor()?.name ?: getString(R.string.no_door_saved),
             empty = activeDoor() == null,
-            emptyAction = "Scan door QR code",
+            emptyAction = getString(R.string.scan_door_qr_code),
             onClick = { chooseDoorDialog() },
             onAction = { scanDoor() },
             onMenu = { showDoorMenu() },
         ))
 
         layout.addView(profileCardView(
-            title = "Vehicle",
-            value = activePlate()?.plateNumber ?: "No vehicle saved",
+            title = getString(R.string.vehicle),
+            value = activePlate()?.plateNumber ?: getString(R.string.no_vehicle_saved),
             empty = activePlate() == null,
-            emptyAction = "Add license plate",
+            emptyAction = getString(R.string.add_license_plate),
             onClick = { choosePlateDialog() },
             onAction = { addPlateDialog(null) },
             onMenu = { showPlateMenu() },
         ))
 
         openButton = TextView(this).apply {
-            text = "OPEN DOOR"
+            text = getString(R.string.open_door)
             textSize = 24f
             gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
@@ -146,7 +146,7 @@ class MainActivity : ComponentActivity() {
         })
 
         messageText = TextView(this).apply {
-            text = lastOpenedAt?.let { "Last opened successfully at $it" } ?: "Scan once. Open anytime."
+            text = lastOpenedAt?.let { getString(R.string.last_opened_successfully_at, it) } ?: getString(R.string.scan_once_open_anytime)
             textSize = 13f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -184,7 +184,7 @@ class MainActivity : ComponentActivity() {
     private fun handleScannedDoor(scanned: String) {
         val url = normalizeAutoparkkiAccessUrl(scanned)
         if (url == null) {
-            showMessage("Invalid QR content.", "TRY AGAIN", UiColors.Danger)
+            showMessage(getString(R.string.invalid_qr_content), getString(R.string.try_again), UiColors.Danger)
         } else {
             addDoorDialog(url)
         }
@@ -196,25 +196,25 @@ class MainActivity : ComponentActivity() {
         val plate = activePlate()
 
         if (door == null) {
-            showMessage("No door selected.", "TRY AGAIN", UiColors.Danger)
+            showMessage(getString(R.string.no_door_selected), getString(R.string.try_again), UiColors.Danger)
             vibrateFailure()
             return
         }
 
         if (plate == null) {
-            showMessage("No vehicle selected.", "TRY AGAIN", UiColors.Danger)
+            showMessage(getString(R.string.no_vehicle_selected), getString(R.string.try_again), UiColors.Danger)
             vibrateFailure()
             return
         }
 
         if (normalizeAutoparkkiAccessUrl(door.accessUrl) == null) {
-            showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
+            showMessage(getString(R.string.invalid_europark_access_url), getString(R.string.try_again), UiColors.Danger)
             vibrateFailure()
             return
         }
 
         isOpening = true
-        updateOpeningUi("OPENING...", UiColors.Warning, "Sending request...")
+        updateOpeningUi(getString(R.string.opening), UiColors.Warning, getString(R.string.sending_request))
         vibrateLight()
 
         Thread {
@@ -228,16 +228,16 @@ class MainActivity : ComponentActivity() {
                 isOpening = false
                 if (result.ok) {
                     lastOpenedAt = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                    updateOpeningUi("OPENED", UiColors.Green, "Door opened at $lastOpenedAt")
-                    messageText.text = "Last opened successfully at $lastOpenedAt"
+                    updateOpeningUi(getString(R.string.opened), UiColors.Green, getString(R.string.door_opened_at, lastOpenedAt))
+                    messageText.text = getString(R.string.last_opened_successfully_at, lastOpenedAt)
                     mainHandler.postDelayed({
                         if (!isOpening && ::openButton.isInitialized) {
-                            openButton.text = "OPEN DOOR"
+                            openButton.text = getString(R.string.open_door)
                         }
                     }, 2500)
                     vibrateSuccess()
                 } else {
-                    updateOpeningUi("TRY AGAIN", UiColors.Danger, result.message.ifBlank { "Opening failed - retry" })
+                    updateOpeningUi(getString(R.string.try_again), UiColors.Danger, result.message.ifBlank { getString(R.string.opening_failed_retry) })
                     vibrateFailure()
                 }
             }
@@ -250,7 +250,7 @@ class MainActivity : ComponentActivity() {
             developerMode = true
             helpTapCount = 0
             render()
-            showMessage("Developer mode enabled.", "OPEN DOOR", UiColors.Green)
+            showMessage(getString(R.string.developer_mode_enabled), getString(R.string.open_door), UiColors.Green)
         }
     }
 

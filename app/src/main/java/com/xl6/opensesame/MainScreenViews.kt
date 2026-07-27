@@ -13,7 +13,7 @@ fun MainActivity.headerView(onHelp: () -> Unit): LinearLayout {
         gravity = Gravity.CENTER_VERTICAL
 
         addView(TextView(this@headerView).apply {
-            text = "Open-Sesame"
+            text = getString(R.string.app_name)
             textSize = 30f
             setTextColor(UiColors.Text)
             setTypeface(null, Typeface.BOLD)
@@ -52,7 +52,7 @@ fun MainActivity.statusBarView(
         })
 
         val status = TextView(this@statusBarView).apply {
-            text = if (isOpening) "Sending request..." else "Ready to open"
+            text = if (isOpening) getString(R.string.sending_request) else getString(R.string.ready_to_open)
             textSize = 15f
             setTypeface(null, Typeface.BOLD)
             setTextColor(if (isOpening) UiColors.Warning else UiColors.Green)
@@ -147,11 +147,11 @@ fun MainActivity.advancedSectionView(
     onUpdate: () -> Unit,
     onReset: () -> Unit
 ): LinearLayout {
-    return sectionView("Advanced") {
+    return sectionView(getString(R.string.advanced)) {
         addView(actionRow(
-            quietAction("DEBUG") { onDebug() },
-            quietAction("UPDATE") { onUpdate() },
-            dangerAction("RESET") { onReset() },
+            quietAction(getString(R.string.debug)) { onDebug() },
+            quietAction(getString(R.string.update)) { onUpdate() },
+            dangerAction(getString(R.string.reset)) { onReset() },
         ))
     }
 }

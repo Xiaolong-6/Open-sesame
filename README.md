@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.3.9`
+- App version: `0.4.0`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,11 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.0
+
+- Added Android string resources for English, Finnish, and Chinese.
+- Migrated the main screen, Help, menus, common dialogs, status messages, and scanner title to localized resources.
 
 ### 0.3.9
 

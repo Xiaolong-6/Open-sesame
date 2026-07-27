@@ -16,12 +16,12 @@ import android.widget.TextView
 internal fun MainActivity.showDoorMenu() {
     val door = activeDoor()
     showBottomSheet(
-        title = "Door",
+        title = getString(R.string.door),
         actions = listOf(
-            SheetAction("Choose door") { chooseDoorDialog() },
-            SheetAction("Scan new door") { scanDoor() },
-            SheetAction("Edit current door") { door?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
-            SheetAction("Delete current door", destructive = true) { deleteActiveDoor() },
+            SheetAction(getString(R.string.choose_door)) { chooseDoorDialog() },
+            SheetAction(getString(R.string.scan_new_door)) { scanDoor() },
+            SheetAction(getString(R.string.edit_current_door)) { door?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
+            SheetAction(getString(R.string.delete_current_door), destructive = true) { deleteActiveDoor() },
         )
     )
 }
@@ -29,12 +29,12 @@ internal fun MainActivity.showDoorMenu() {
 internal fun MainActivity.showPlateMenu() {
     val plate = activePlate()
     showBottomSheet(
-        title = "Vehicle",
+        title = getString(R.string.vehicle),
         actions = listOf(
-            SheetAction("Choose vehicle") { choosePlateDialog() },
-            SheetAction("Add license plate") { addPlateDialog(null) },
-            SheetAction("Edit current plate") { plate?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
-            SheetAction("Delete current plate", destructive = true) { deleteActivePlate() },
+            SheetAction(getString(R.string.choose_vehicle)) { choosePlateDialog() },
+            SheetAction(getString(R.string.add_license_plate)) { addPlateDialog(null) },
+            SheetAction(getString(R.string.edit_current_plate)) { plate?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
+            SheetAction(getString(R.string.delete_current_plate), destructive = true) { deleteActivePlate() },
         )
     )
 }
@@ -45,7 +45,7 @@ internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
         setPadding(dp(12), 0, dp(12), 0)
     }
 
-    val nameInput = EditText(this).apply { hint = "Door name" }
+    val nameInput = EditText(this).apply { hint = getString(R.string.door_name) }
     val urlInput = EditText(this).apply {
         hint = "https://dc.autoparkki.fi/access/..."
         setText(prefillUrl ?: "")
@@ -55,11 +55,11 @@ internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
     container.addView(urlInput)
 
     if (!prefillUrl.isNullOrBlank()) {
-        nameInput.setText("Detecting door name...")
+        nameInput.setText(getString(R.string.detecting_door_name))
         Thread {
             val suggested = opener.suggestDoorName(prefillUrl)
             runOnUiThread {
-                if (nameInput.text.toString() == "Detecting door name...") {
+                if (nameInput.text.toString() == getString(R.string.detecting_door_name)) {
                     nameInput.setText(suggested)
                 }
             }
@@ -67,23 +67,23 @@ internal fun MainActivity.addDoorDialog(prefillUrl: String?) {
     }
 
     AlertDialog.Builder(this)
-        .setTitle("Add door")
+        .setTitle(getString(R.string.add_door))
         .setView(container)
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Save") { _, _ ->
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.save)) { _, _ ->
             val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
             if (url == null) {
-                showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
+                showMessage(getString(R.string.invalid_europark_access_url), getString(R.string.try_again), UiColors.Danger)
                 return@setPositiveButton
             }
-            val name = nameInput.text.toString().trim().ifBlank { "EuroPark (autoparkki) door" }
+            val name = nameInput.text.toString().trim().ifBlank { getString(R.string.europark_door_fallback) }
             val profile = DoorProfile(store.newId("door"), name, url)
             doors.add(profile)
             store.saveDoors(doors)
             store.setActiveDoorId(profile.id)
             reload()
             render()
-            showMessage("Ready to open", "OPEN DOOR", UiColors.Green)
+            showMessage(getString(R.string.ready_to_open), getString(R.string.open_door), UiColors.Green)
         }
         .show()
 }
@@ -101,13 +101,13 @@ internal fun MainActivity.editDoorDialog(door: DoorProfile) {
     container.addView(urlInput)
 
     AlertDialog.Builder(this)
-        .setTitle("Edit door")
+        .setTitle(getString(R.string.edit_door))
         .setView(container)
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Save") { _, _ ->
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.save)) { _, _ ->
             val url = normalizeAutoparkkiAccessUrl(urlInput.text.toString())
             if (url == null) {
-                showMessage("Invalid EuroPark access URL.", "TRY AGAIN", UiColors.Danger)
+                showMessage(getString(R.string.invalid_europark_access_url), getString(R.string.try_again), UiColors.Danger)
                 return@setPositiveButton
             }
             doors = doors.map {
@@ -130,10 +130,10 @@ internal fun MainActivity.addPlateDialog(existing: PlateProfile?) {
     }
 
     AlertDialog.Builder(this)
-        .setTitle(if (existing == null) "Add license plate" else "Edit license plate")
+        .setTitle(if (existing == null) getString(R.string.add_license_plate) else getString(R.string.edit_license_plate))
         .setView(input)
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Save") { _, _ ->
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.save)) { _, _ ->
             val plate = input.text.toString().trim().uppercase()
             if (plate.isBlank()) return@setPositiveButton
 
@@ -162,7 +162,7 @@ internal fun MainActivity.chooseDoorDialog() {
     }
 
     showBottomSheet(
-        title = "Choose door",
+        title = getString(R.string.choose_door),
         actions = doors.map { door ->
             SheetAction(door.name) {
                 store.setActiveDoorId(door.id)
@@ -180,7 +180,7 @@ internal fun MainActivity.choosePlateDialog() {
     }
 
     showBottomSheet(
-        title = "Choose vehicle",
+        title = getString(R.string.choose_vehicle),
         actions = plates.map { plate ->
             SheetAction(plate.plateNumber) {
                 store.setActivePlateId(plate.id)
@@ -194,10 +194,10 @@ internal fun MainActivity.choosePlateDialog() {
 internal fun MainActivity.deleteActiveDoor() {
     val door = activeDoor() ?: return
     AlertDialog.Builder(this)
-        .setTitle("Delete current door?")
-        .setMessage("This removes the selected door URL from this phone.")
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Delete") { _, _ ->
+        .setTitle(getString(R.string.delete_current_door_question))
+        .setMessage(getString(R.string.delete_current_door_message))
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.delete)) { _, _ ->
             doors.removeAll { it.id == door.id }
             store.saveDoors(doors)
             store.setActiveDoorId(doors.firstOrNull()?.id)
@@ -210,10 +210,10 @@ internal fun MainActivity.deleteActiveDoor() {
 internal fun MainActivity.deleteActivePlate() {
     val plate = activePlate() ?: return
     AlertDialog.Builder(this)
-        .setTitle("Delete current plate?")
-        .setMessage("This removes the selected license plate from this phone.")
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Delete") { _, _ ->
+        .setTitle(getString(R.string.delete_current_plate_question))
+        .setMessage(getString(R.string.delete_current_plate_message))
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.delete)) { _, _ ->
             plates.removeAll { it.id == plate.id }
             store.savePlates(plates)
             store.setActivePlateId(plates.firstOrNull()?.id)
@@ -234,7 +234,7 @@ internal fun MainActivity.showInstructions() {
     }
 
     content.addView(TextView(this).apply {
-        text = "Quick opener"
+        text = getString(R.string.quick_opener)
         textSize = 22f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Text)
@@ -243,14 +243,14 @@ internal fun MainActivity.showInstructions() {
     })
 
     content.addView(TextView(this).apply {
-        text = "Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door."
+        text = getString(R.string.help_body)
         textSize = 15f
         setTextColor(UiColors.Text)
         setLineSpacing(dp(2).toFloat(), 1.0f)
     })
 
     val developerModeCheckbox = CheckBox(this).apply {
-        text = "Developer mode"
+        text = getString(R.string.developer_mode)
         textSize = 14f
         setTextColor(UiColors.Text)
         isChecked = developerMode
@@ -272,7 +272,7 @@ internal fun MainActivity.showInstructions() {
     }
 
     buttons.addView(TextView(this).apply {
-        text = "UPDATE"
+        text = getString(R.string.update)
         textSize = 14f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Green)
@@ -285,7 +285,7 @@ internal fun MainActivity.showInstructions() {
     })
 
     buttons.addView(TextView(this).apply {
-        text = "OK"
+        text = getString(R.string.ok)
         textSize = 14f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Green)
@@ -325,7 +325,7 @@ internal fun MainActivity.debugFetch() {
         AlertDialog.Builder(this)
             .setTitle("Debug")
             .setMessage(baseInfo + "\nCurrent door: none selected.\nScan a EuroPark (autoparkki) door first.")
-            .setPositiveButton("OK", null)
+            .setPositiveButton(getString(R.string.ok), null)
             .show()
         return
     }
@@ -333,7 +333,7 @@ internal fun MainActivity.debugFetch() {
     AlertDialog.Builder(this)
         .setTitle("Debug")
         .setMessage(baseInfo + "\nCurrent door: selected\nFetching current door webpage info...")
-        .setPositiveButton("OK", null)
+        .setPositiveButton(getString(R.string.ok), null)
         .show()
 
     Thread {
@@ -342,7 +342,7 @@ internal fun MainActivity.debugFetch() {
             AlertDialog.Builder(this)
                 .setTitle("Debug")
                 .setMessage(baseInfo + "\nCurrent door: selected\n\n" + pageInfo)
-                .setPositiveButton("OK", null)
+                .setPositiveButton(getString(R.string.ok), null)
                 .show()
         }
     }.start()
@@ -350,10 +350,10 @@ internal fun MainActivity.debugFetch() {
 
 internal fun MainActivity.clearAll() {
     AlertDialog.Builder(this)
-        .setTitle("Reset app data?")
-        .setMessage("This deletes all local door URLs and license plates from this phone.")
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Reset") { _, _ ->
+        .setTitle(getString(R.string.reset_app_data_question))
+        .setMessage(getString(R.string.reset_app_data_message))
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.reset)) { _, _ ->
             store.clearAll()
             reload()
             lastOpenedAt = null
