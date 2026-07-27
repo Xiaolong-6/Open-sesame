@@ -229,6 +229,7 @@ internal fun MainActivity.chooseDoorDialog() {
     showProfilePickerDialog(
         title = getString(R.string.choose_door),
         primaryAction = getString(R.string.scan_new_door),
+        helperText = getString(R.string.picker_interaction_hint),
         emptyText = getString(R.string.no_door_saved),
         rows = doors.map { door ->
             ProfilePickerRow(
@@ -261,6 +262,7 @@ internal fun MainActivity.choosePlateDialog() {
     showProfilePickerDialog(
         title = getString(R.string.choose_vehicle),
         primaryAction = getString(R.string.add_license_plate),
+        helperText = getString(R.string.picker_interaction_hint),
         emptyText = getString(R.string.no_vehicle_saved),
         rows = plates.map { plate ->
             ProfilePickerRow(
@@ -350,6 +352,7 @@ private data class ProfilePickerRow(
 private fun MainActivity.showProfilePickerDialog(
     title: String,
     primaryAction: String,
+    helperText: String,
     emptyText: String,
     rows: List<ProfilePickerRow>,
     onDeleteSelected: (Set<String>) -> Unit,
@@ -368,16 +371,6 @@ private fun MainActivity.showProfilePickerDialog(
     }
 
     content.addView(TextView(this).apply {
-        text = title
-        textSize = 18f
-        setTypeface(null, Typeface.BOLD)
-        setTextColor(UiColors.Text)
-        gravity = Gravity.CENTER
-        includeFontPadding = false
-        setPadding(0, 0, 0, dp(12))
-    })
-
-    content.addView(TextView(this).apply {
         text = primaryAction
         textSize = 16f
         setTypeface(null, Typeface.BOLD)
@@ -390,7 +383,26 @@ private fun MainActivity.showProfilePickerDialog(
             onPrimaryAction()
         }
     }, LinearLayout.LayoutParams(-1, -2).apply {
-        setMargins(0, 0, 0, dp(12))
+        setMargins(0, 0, 0, dp(16))
+    })
+
+    content.addView(TextView(this).apply {
+        text = title
+        textSize = 18f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Text)
+        gravity = Gravity.CENTER
+        includeFontPadding = false
+        setPadding(0, 0, 0, dp(12))
+    })
+
+    content.addView(TextView(this).apply {
+        text = helperText
+        textSize = 13f
+        setTextColor(UiColors.Muted)
+        gravity = Gravity.CENTER
+        includeFontPadding = false
+        setPadding(0, 0, 0, dp(10))
     })
 
     val listContainer = LinearLayout(this).apply {
@@ -669,13 +681,19 @@ internal fun MainActivity.showInstructions() {
         })
     })
 
+    var versionText: TextView? = null
     content.addView(settingsSectionCard(getString(R.string.about)) {
         addView(settingsActionRow(getString(R.string.open_releases_page)) {
             dialog.dismiss()
             openUrl(ReleaseInfo.RELEASES_URL)
         })
-        addView(settingsStaticRow(getString(R.string.version_label, ReleaseInfo.VERSION_NAME), showDivider = false))
+        addView(settingsStaticRow(
+            getString(R.string.version_label, ReleaseInfo.VERSION_NAME),
+            showDivider = false,
+            bindLabel = { versionText = it }
+        ))
     })
+    checkForAboutUpdate(dialog, versionText)
 
     content.addView(settingsSectionCard(getString(R.string.developer_mode)) {
         addView(settingsToggleRow(getString(R.string.developer_mode), developerCheck, showDivider = false) {
@@ -746,8 +764,12 @@ private fun MainActivity.settingsActionRow(
     }
 }
 
-private fun MainActivity.settingsStaticRow(label: String, showDivider: Boolean = true): LinearLayout {
-    return settingsBaseRow(label, showDivider, null, muted = true)
+private fun MainActivity.settingsStaticRow(
+    label: String,
+    showDivider: Boolean = true,
+    bindLabel: ((TextView) -> Unit)? = null
+): LinearLayout {
+    return settingsBaseRow(label, showDivider, null, muted = true, bindLabel = bindLabel)
 }
 
 private fun MainActivity.settingsToggleRow(
@@ -767,6 +789,7 @@ private fun MainActivity.settingsBaseRow(
     onClick: (() -> Unit)?,
     destructive: Boolean = false,
     muted: Boolean = false,
+    bindLabel: ((TextView) -> Unit)? = null,
     trailing: (LinearLayout.() -> Unit)? = null
 ): LinearLayout {
     return LinearLayout(this).apply {
@@ -789,6 +812,7 @@ private fun MainActivity.settingsBaseRow(
             })
             setTypeface(null, if (muted) Typeface.NORMAL else Typeface.BOLD)
             includeFontPadding = false
+            bindLabel?.invoke(this)
         }, LinearLayout.LayoutParams(0, -2, 1f))
 
         trailing?.invoke(row)
@@ -803,6 +827,25 @@ private fun MainActivity.settingsBaseRow(
             })
         }
     }
+}
+
+private fun MainActivity.checkForAboutUpdate(dialog: Dialog, versionText: TextView?) {
+    if (versionText == null) return
+    Thread {
+        val hasNew = try {
+            UpdateChecker.hasNewRelease()
+        } catch (_: Exception) {
+            false
+        }
+
+        if (hasNew) {
+            runOnUiThread {
+                if (dialog.isShowing) {
+                    versionText.text = getString(R.string.version_label_new, ReleaseInfo.VERSION_NAME)
+                }
+            }
+        }
+    }.start()
 }
 
 internal fun MainActivity.showLanguageMenu() {

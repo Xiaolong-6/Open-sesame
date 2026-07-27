@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.5.6`
+- App version: `0.5.7`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.7
+
+- Added an About version update indicator that shows `New` when the latest GitHub release is newer than the installed version.
+- Moved picker titles below the primary scan/add action.
+- Added a short picker interaction hint below the choose title.
 
 ### 0.5.6
 

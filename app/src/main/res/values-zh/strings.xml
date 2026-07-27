@@ -1,6 +1,7 @@
 <resources>
     <string name="edit_selected">编辑选中项</string>
     <string name="delete_selected">删除选中项</string>
+    <string name="picker_interaction_hint">点击选择，长按管理。</string>
     <string name="edit">编辑</string>
     <string name="registration_number">输入车牌号</string>
     <string name="app_name">Open-Sesame</string>
@@ -63,6 +64,7 @@
     <string name="about">关于</string>
     <string name="developer_tools">开发者工具</string>
     <string name="version_label">版本 %1$s</string>
+    <string name="version_label_new">版本 %1$s · New</string>
     <string name="help_body">在本机保存已授权的门和车辆。点击开门发送请求。\n\n请始终确认实体门是否打开。</string>
     <string name="developer_mode">开发者模式</string>
     <string name="on">开启</string>

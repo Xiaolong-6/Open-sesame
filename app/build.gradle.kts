@@ -13,8 +13,8 @@ android {
         applicationId = "com.xl6.opensesame"
         minSdk = 26
         targetSdk = 35
-        versionCode = 30
-        versionName = "0.5.6"
+        versionCode = 31
+        versionName = "0.5.7"
     }
 
     compileOptions {

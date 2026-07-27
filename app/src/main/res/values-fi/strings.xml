@@ -1,6 +1,7 @@
 <resources>
     <string name="edit_selected">Muokkaa valittua</string>
     <string name="delete_selected">Poista valitut</string>
+    <string name="picker_interaction_hint">Valitse napauttamalla. Hallitse painamalla pitkään.</string>
     <string name="edit">Muokkaa</string>
     <string name="registration_number">Syota rekisterinumero</string>
     <string name="app_name">Open-Sesame</string>
@@ -63,6 +64,7 @@
     <string name="about">Tietoja</string>
     <string name="developer_tools">Kehittäjätyökalut</string>
     <string name="version_label">Versio %1$s</string>
+    <string name="version_label_new">Versio %1$s · Uusi</string>
     <string name="help_body">Tallenna valtuutettu ovi ja ajoneuvo paikallisesti. Lähetä pyyntö napauttamalla AVAA OVI.\n\nTarkista aina fyysinen ovi.</string>
     <string name="developer_mode">Kehittäjätila</string>
     <string name="on">Käytössä</string>

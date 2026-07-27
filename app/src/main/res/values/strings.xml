@@ -41,6 +41,7 @@
     <string name="delete">Delete</string>
     <string name="edit_selected">Edit selected</string>
     <string name="delete_selected">Delete selected</string>
+    <string name="picker_interaction_hint">Tap to select. Long-press to manage.</string>
     <string name="reset">Reset</string>
     <string name="ok">OK</string>
     <string name="update">UPDATE</string>
@@ -63,6 +64,7 @@
     <string name="about">About</string>
     <string name="developer_tools">Developer tools</string>
     <string name="version_label">Version %1$s</string>
+    <string name="version_label_new">Version %1$s · New</string>
     <string name="help_body">Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door.</string>
     <string name="developer_mode">Developer mode</string>
     <string name="on">On</string>
