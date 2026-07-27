@@ -6,7 +6,16 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Screenshot
 
-The README screenshot is intentionally pending refresh for the next release so the repository does not show the older Step UI.
+<p>
+  <img src="docs/images/open-sesame-v0.5.8-home-ready.png" width="220" alt="Open-Sesame home ready screen" />
+  <img src="docs/images/open-sesame-v0.5.8-home-opened.png" width="220" alt="Open-Sesame opened state" />
+  <img src="docs/images/open-sesame-v0.5.8-home-empty.png" width="220" alt="Open-Sesame empty setup state" />
+</p>
+
+<p>
+  <img src="docs/images/open-sesame-v0.5.8-settings.png" width="220" alt="Open-Sesame settings screen" />
+  <img src="docs/images/open-sesame-v0.5.8-vehicle-picker.png" width="220" alt="Open-Sesame vehicle picker" />
+</p>
 
 ## Current version
 
