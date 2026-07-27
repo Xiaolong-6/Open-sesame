@@ -12,7 +12,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.3.3`
+- App version: `0.3.4`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.3.4
+
+- Replaced deprecated system bar setup with AndroidX edge-to-edge APIs.
+- Replaced `Uri.parse(...)` calls with AndroidX `toUri()`.
+- Removed a redundant Regex character escape.
 
 ### 0.3.3
 

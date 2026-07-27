@@ -5,18 +5,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,9 +43,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = UiColors.Bg
-        window.navigationBarColor = UiColors.Bg
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(UiColors.Bg, UiColors.Bg),
+            navigationBarStyle = SystemBarStyle.light(UiColors.Bg, UiColors.Bg)
+        )
 
         store = ProfileStore(this)
         reload()
@@ -168,7 +170,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.3"
+            text = "v0.3.4"
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -277,11 +279,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun extractAutoparkkiUrl(raw: String): String? {
-        val match = Regex("https?://[^\\s\\\"'<>]+", RegexOption.IGNORE_CASE).find(raw.trim())
+        val match = Regex("""https?://[^\s"'<>]+""", RegexOption.IGNORE_CASE).find(raw.trim())
         val url = (match?.value ?: raw.trim())
 
         return try {
-            val parsed = Uri.parse(url)
+            val parsed = url.toUri()
             val host = parsed.host?.lowercase() ?: return null
             if (
                 parsed.scheme == "https" &&
@@ -296,6 +298,6 @@ class MainActivity : ComponentActivity() {
     }
 
     internal fun openUrl(url: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
     }
 }
