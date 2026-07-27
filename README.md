@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.8`
+- App version: `0.4.9`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,10 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.9
+
+- Kept the title/header at the top while vertically centering the main controls in the remaining home screen space.
 
 ### 0.4.8
 

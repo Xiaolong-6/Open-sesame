@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -94,21 +95,31 @@ class MainActivity : ComponentActivity() {
     }
 
     internal fun render() {
-        val root = ScrollView(this).apply {
-            setBackgroundColor(UiColors.Bg)
-            clipToPadding = false
-            fitsSystemWindows = true
-        }
-
-        val layout = LinearLayout(this).apply {
+        val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
+            setBackgroundColor(UiColors.Bg)
+            fitsSystemWindows = true
             setPadding(dp(18), dp(18), dp(18), dp(14))
         }
 
-        root.addView(layout)
         setContentView(root)
 
-        layout.addView(headerView { showInstructions() })
+        root.addView(headerView { showInstructions() })
+
+        val bodyScroll = ScrollView(this).apply {
+            clipToPadding = false
+            isFillViewport = true
+        }
+        root.addView(bodyScroll, LinearLayout.LayoutParams(-1, 0, 1f))
+
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(12), 0, dp(6))
+        }
+
+        bodyScroll.addView(layout, ViewGroup.LayoutParams(-1, -1))
+
         layout.addView(statusBarView(
             isOpening = isOpening,
             bindStatusIcon = { statusIcon = it },
