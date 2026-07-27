@@ -1,4 +1,5 @@
 <resources>
+    <string name="edit">编辑</string>
     <string name="registration_number">输入车牌号</string>
     <string name="app_name">Open-Sesame</string>
     <string name="door">门</string>

@@ -30,10 +30,7 @@ fun MainActivity.headerView(onHelp: () -> Unit): LinearLayout {
 fun MainActivity.doorSummaryCardView(
     value: String,
     empty: Boolean,
-    emptyAction: String,
-    onClick: () -> Unit,
-    onAction: () -> Unit,
-    onMenu: () -> Unit
+    onClick: () -> Unit
 ): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
@@ -41,7 +38,7 @@ fun MainActivity.doorSummaryCardView(
         setPadding(dp(18), dp(20), dp(18), dp(18))
         background = rounded(UiColors.Card, dp(7))
         elevation = dp(1).toFloat()
-        setOnClickListener { if (empty) onAction() else onClick() }
+        setOnClickListener { onClick() }
         layoutParams = LinearLayout.LayoutParams(-1, -2).apply {
             setMargins(0, 0, 0, dp(14))
         }
@@ -49,8 +46,6 @@ fun MainActivity.doorSummaryCardView(
         addView(LinearLayout(this@doorSummaryCardView).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-
-            addView(TextView(this@doorSummaryCardView), LinearLayout.LayoutParams(dp(38), dp(38)))
 
             val textBlock = LinearLayout(this@doorSummaryCardView).apply {
                 orientation = LinearLayout.VERTICAL
@@ -77,37 +72,8 @@ fun MainActivity.doorSummaryCardView(
                 setPadding(0, dp(7), 0, 0)
             })
 
-            addView(textBlock, LinearLayout.LayoutParams(0, -2, 1f))
-
-            if (empty) {
-                addView(TextView(this@doorSummaryCardView).apply {
-                    text = "+"
-                    textSize = 20f
-                    gravity = Gravity.CENTER
-                    setTypeface(null, Typeface.BOLD)
-                    setTextColor(Color.WHITE)
-                    background = rounded(UiColors.Green, dp(19))
-                    setOnClickListener { onAction() }
-                }, LinearLayout.LayoutParams(dp(38), dp(38)))
-            } else {
-                addView(CardActionIconView(this@doorSummaryCardView, CardActionIcon.Menu).apply {
-                    background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(19), dp(1))
-                    setOnClickListener { onMenu() }
-                }, LinearLayout.LayoutParams(dp(38), dp(38)))
-            }
+            addView(textBlock, LinearLayout.LayoutParams(-1, -2))
         })
-
-        if (empty) {
-            addView(TextView(this@doorSummaryCardView).apply {
-                text = emptyAction
-                textSize = 13f
-                setTextColor(UiColors.Green)
-                setTypeface(null, Typeface.BOLD)
-                gravity = Gravity.CENTER
-                includeFontPadding = false
-                setPadding(0, dp(12), 0, 0)
-            })
-        }
     }
 }
 
@@ -117,9 +83,7 @@ fun MainActivity.openPanelCardView(
     isOpening: Boolean,
     bindOpenButton: (TextView) -> Unit,
     onOpen: () -> Unit,
-    onPlateClick: () -> Unit,
-    onPlateAction: () -> Unit,
-    onPlateMenu: () -> Unit
+    onPlateClick: () -> Unit
 ): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
@@ -130,24 +94,14 @@ fun MainActivity.openPanelCardView(
             setMargins(0, 0, 0, dp(14))
         }
 
-        addView(LinearLayout(this@openPanelCardView).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-
-            addView(TextView(this@openPanelCardView).apply {
-                text = getString(R.string.registration_number)
-                textSize = 15f
-                setTextColor(UiColors.Text)
-                setTypeface(null, Typeface.BOLD)
-                gravity = Gravity.CENTER
-                includeFontPadding = false
-            }, LinearLayout.LayoutParams(0, -2, 1f))
-
-            addView(CardActionIconView(this@openPanelCardView, CardActionIcon.Menu).apply {
-                background = roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(18), dp(1))
-                setOnClickListener { if (plateEmpty) onPlateAction() else onPlateMenu() }
-            }, LinearLayout.LayoutParams(dp(36), dp(36)))
-        })
+        addView(TextView(this@openPanelCardView).apply {
+            text = getString(R.string.registration_number)
+            textSize = 15f
+            setTextColor(UiColors.Text)
+            setTypeface(null, Typeface.BOLD)
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+        }, LinearLayout.LayoutParams(-1, -2))
 
         addView(TextView(this@openPanelCardView).apply {
             text = plateValue
@@ -160,7 +114,7 @@ fun MainActivity.openPanelCardView(
             maxLines = 1
             background = roundedStroke(UiColors.Card, UiColors.Muted, dp(4), dp(1))
             setPadding(dp(12), 0, dp(12), 0)
-            setOnClickListener { if (plateEmpty) onPlateAction() else onPlateClick() }
+            setOnClickListener { onPlateClick() }
         }, LinearLayout.LayoutParams(-1, dp(72)).apply {
             setMargins(0, dp(20), 0, dp(14))
         })

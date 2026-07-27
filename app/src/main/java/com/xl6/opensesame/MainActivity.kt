@@ -121,10 +121,7 @@ class MainActivity : ComponentActivity() {
         layout.addView(doorSummaryCardView(
             value = activeDoor()?.name ?: getString(R.string.no_door_saved),
             empty = activeDoor() == null,
-            emptyAction = getString(R.string.scan_door_qr_code),
             onClick = { chooseDoorDialog() },
-            onAction = { scanDoor() },
-            onMenu = { showDoorMenu() },
         ))
 
         layout.addView(openPanelCardView(
@@ -134,8 +131,6 @@ class MainActivity : ComponentActivity() {
             bindOpenButton = { openButton = it },
             onOpen = { openDoor() },
             onPlateClick = { choosePlateDialog() },
-            onPlateAction = { addPlateDialog(null) },
-            onPlateMenu = { showPlateMenu() },
         ))
 
         layout.addView(statusInfoCardView(
