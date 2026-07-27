@@ -54,7 +54,11 @@
     <string name="delete_current_plate_message">This removes the selected license plate from this phone.</string>
     <string name="quick_opener">Quick opener</string>
     <string name="settings">Settings</string>
+    <string name="preferences">Preferences</string>
+    <string name="share_section">Share</string>
+    <string name="about">About</string>
     <string name="developer_tools">Developer tools</string>
+    <string name="version_label">Version %1$s</string>
     <string name="help_body">Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door.</string>
     <string name="developer_mode">Developer mode</string>
     <string name="advanced">Advanced</string>

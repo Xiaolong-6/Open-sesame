@@ -54,7 +54,11 @@
     <string name="delete_current_plate_message">这会从本机删除所选车牌。</string>
     <string name="quick_opener">快速开门</string>
     <string name="settings">设置</string>
+    <string name="preferences">偏好设置</string>
+    <string name="share_section">分享</string>
+    <string name="about">关于</string>
     <string name="developer_tools">开发者工具</string>
+    <string name="version_label">版本 %1$s</string>
     <string name="help_body">在本机保存已授权的门和车辆。点击开门发送请求。\n\n请始终确认实体门是否打开。</string>
     <string name="developer_mode">开发者模式</string>
     <string name="advanced">高级</string>

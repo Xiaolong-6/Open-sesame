@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.5`
+- App version: `0.4.6`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.6
+
+- Made Settings a full-screen secondary menu.
+- Reorganized Settings into Preferences, Share, About, Developer mode, and Developer tools sections.
+- Moved Language out of Developer tools into regular Preferences.
 
 ### 0.4.5
 

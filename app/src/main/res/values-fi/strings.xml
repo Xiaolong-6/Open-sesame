@@ -54,7 +54,11 @@
     <string name="delete_current_plate_message">Tämä poistaa valitun rekisterinumeron tästä puhelimesta.</string>
     <string name="quick_opener">Pika-avaaja</string>
     <string name="settings">Asetukset</string>
+    <string name="preferences">Asetukset</string>
+    <string name="share_section">Jaa</string>
+    <string name="about">Tietoja</string>
     <string name="developer_tools">Kehittäjätyökalut</string>
+    <string name="version_label">Versio %1$s</string>
     <string name="help_body">Tallenna valtuutettu ovi ja ajoneuvo paikallisesti. Lähetä pyyntö napauttamalla AVAA OVI.\n\nTarkista aina fyysinen ovi.</string>
     <string name="developer_mode">Kehittäjätila</string>
     <string name="advanced">Lisäasetukset</string>
