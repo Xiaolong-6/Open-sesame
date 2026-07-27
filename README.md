@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.3`
+- App version: `0.4.4`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.4
+
+- Added a Developer mode language switcher for System, English, Finnish, and Chinese.
+- Persisted Developer mode so language switching can recreate the app without hiding Advanced controls.
+- Replaced non-ASCII helper glyphs in the Help dialog source with ASCII text.
 
 ### 0.4.3
 

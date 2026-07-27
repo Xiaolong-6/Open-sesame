@@ -251,7 +251,7 @@ internal fun MainActivity.showInstructions() {
 
     val developerCheck = TextView(this)
     fun updateDeveloperCheck() {
-        developerCheck.text = if (developerChecked) "✓" else ""
+        developerCheck.text = if (developerChecked) "ON" else ""
         developerCheck.setTextColor(Color.WHITE)
         developerCheck.gravity = Gravity.CENTER
         developerCheck.textSize = 15f
@@ -270,12 +270,14 @@ internal fun MainActivity.showInstructions() {
     }
     actionList.addView(helpActionRow(getString(R.string.share_open_sesame)) {
         developerMode = developerChecked
+        store.setDeveloperMode(developerChecked)
         helpTapCount = 0
         dialog.dismiss()
         showShareMenu()
     })
     actionList.addView(helpActionRow(getString(R.string.open_releases_page)) {
         developerMode = developerChecked
+        store.setDeveloperMode(developerChecked)
         helpTapCount = 0
         dialog.dismiss()
         openUrl(ReleaseInfo.RELEASES_URL)
@@ -308,6 +310,7 @@ internal fun MainActivity.showInstructions() {
         setPadding(dp(16), dp(10), 0, dp(10))
         setOnClickListener {
             developerMode = developerChecked
+            store.setDeveloperMode(developerChecked)
             helpTapCount = 0
             dialog.dismiss()
             render()
@@ -340,7 +343,7 @@ private fun MainActivity.helpActionRow(label: String, onClick: () -> Unit): Line
         }, LinearLayout.LayoutParams(0, -2, 1f))
 
         addView(TextView(this@helpActionRow).apply {
-            text = "›"
+            text = ">"
             textSize = 24f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -365,6 +368,37 @@ private fun MainActivity.helpToggleRow(label: String, checkView: TextView, onCli
 
         addView(checkView, LinearLayout.LayoutParams(dp(24), dp(24)))
     }
+}
+
+internal fun MainActivity.showLanguageMenu() {
+    val current = LocaleController.getLanguageOverride(this)
+    fun label(name: String, language: String): String {
+        return if (current == language) "$name ON" else name
+    }
+
+    showBottomSheet(
+        title = getString(R.string.language),
+        actions = listOf(
+            SheetAction(label(getString(R.string.system_language), LocaleController.LANGUAGE_SYSTEM)) {
+                setLanguageAndRestart(LocaleController.LANGUAGE_SYSTEM)
+            },
+            SheetAction(label(getString(R.string.english), LocaleController.LANGUAGE_ENGLISH)) {
+                setLanguageAndRestart(LocaleController.LANGUAGE_ENGLISH)
+            },
+            SheetAction(label(getString(R.string.finnish), LocaleController.LANGUAGE_FINNISH)) {
+                setLanguageAndRestart(LocaleController.LANGUAGE_FINNISH)
+            },
+            SheetAction(label(getString(R.string.chinese), LocaleController.LANGUAGE_CHINESE)) {
+                setLanguageAndRestart(LocaleController.LANGUAGE_CHINESE)
+            },
+        )
+    )
+}
+
+private fun MainActivity.setLanguageAndRestart(language: String) {
+    LocaleController.setLanguageOverride(this, language)
+    store.setDeveloperMode(true)
+    recreate()
 }
 
 internal fun MainActivity.debugFetch() {

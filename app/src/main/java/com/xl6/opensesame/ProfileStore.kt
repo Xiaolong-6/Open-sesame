@@ -76,6 +76,9 @@ class ProfileStore(context: Context) {
     fun getActivePlateId(): String? = prefs.getString("activePlateId", null)
     fun setActivePlateId(id: String?) = prefs.edit().putString("activePlateId", id).apply()
 
+    fun getDeveloperMode(): Boolean = prefs.getBoolean("developerMode", false)
+    fun setDeveloperMode(enabled: Boolean) = prefs.edit().putBoolean("developerMode", enabled).apply()
+
     fun clearAll() {
         prefs.edit().clear().apply()
     }

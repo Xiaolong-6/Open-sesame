@@ -1,6 +1,7 @@
 package com.xl6.opensesame
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -49,6 +50,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleController.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -57,6 +62,7 @@ class MainActivity : ComponentActivity() {
         )
 
         store = ProfileStore(this)
+        developerMode = store.getDeveloperMode()
         reload()
         render()
     }
@@ -158,6 +164,7 @@ class MainActivity : ComponentActivity() {
         if (developerMode) {
             layout.addView(advancedSectionView(
                 onDebug = { debugFetch() },
+                onLanguage = { showLanguageMenu() },
                 onUpdate = { openUrl(ReleaseInfo.RELEASES_URL) },
                 onReset = { clearAll() },
             ))
@@ -248,6 +255,7 @@ class MainActivity : ComponentActivity() {
         helpTapCount += 1
         if (helpTapCount >= 5 && !developerMode) {
             developerMode = true
+            store.setDeveloperMode(true)
             helpTapCount = 0
             render()
             showMessage(getString(R.string.developer_mode_enabled), getString(R.string.open_door), UiColors.Green)

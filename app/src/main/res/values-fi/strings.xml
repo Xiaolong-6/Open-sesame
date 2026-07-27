@@ -57,6 +57,11 @@
     <string name="developer_mode">Kehittäjätila</string>
     <string name="advanced">Lisäasetukset</string>
     <string name="debug">DEBUG</string>
+    <string name="language">KIELI</string>
+    <string name="system_language">Järjestelmän kieli</string>
+    <string name="english">Englanti</string>
+    <string name="finnish">Suomi</string>
+    <string name="chinese">Kiina</string>
     <string name="reset_app_data_question">Nollataanko sovelluksen tiedot?</string>
     <string name="reset_app_data_message">Tämä poistaa kaikki paikalliset oven URL-osoitteet ja rekisterinumerot tästä puhelimesta.</string>
     <string name="scan_europark_qr">Skannaa EuroPark (autoparkki) QR</string>

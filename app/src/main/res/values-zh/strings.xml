@@ -57,6 +57,11 @@
     <string name="developer_mode">开发者模式</string>
     <string name="advanced">高级</string>
     <string name="debug">调试</string>
+    <string name="language">语言</string>
+    <string name="system_language">跟随系统</string>
+    <string name="english">英语</string>
+    <string name="finnish">芬兰语</string>
+    <string name="chinese">中文</string>
     <string name="reset_app_data_question">重置应用数据？</string>
     <string name="reset_app_data_message">这会从本机删除所有门链接和车牌。</string>
     <string name="scan_europark_qr">扫描 EuroPark (autoparkki) 二维码</string>

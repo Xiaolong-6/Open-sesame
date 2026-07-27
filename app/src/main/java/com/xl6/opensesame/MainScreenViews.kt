@@ -144,6 +144,7 @@ fun MainActivity.profileCardView(
 
 fun MainActivity.advancedSectionView(
     onDebug: () -> Unit,
+    onLanguage: () -> Unit,
     onUpdate: () -> Unit,
     onReset: () -> Unit
 ): LinearLayout {
@@ -153,6 +154,11 @@ fun MainActivity.advancedSectionView(
             quietAction(getString(R.string.update)) { onUpdate() },
             dangerAction(getString(R.string.reset)) { onReset() },
         ))
+        addView(actionRow(
+            quietAction(getString(R.string.language)) { onLanguage() },
+        ), LinearLayout.LayoutParams(-1, -2).apply {
+            setMargins(0, dp(10), 0, 0)
+        })
     }
 }
 
