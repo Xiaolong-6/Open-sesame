@@ -42,6 +42,12 @@
     <string name="update">PÄIVITÄ</string>
     <string name="share">JAA</string>
     <string name="share_open_sesame">Jaa Open-Sesame</string>
+    <string name="show_qr_code">Näytä QR-koodi</string>
+    <string name="share_release_link">Jaa julkaisulinkki</string>
+    <string name="open_releases_page">Avaa julkaisusivu</string>
+    <string name="release_qr_title">Open-Sesame-julkaisu</string>
+    <string name="release_qr_body">Skannaa koodi avataksesi julkisen julkaisusivun.</string>
+    <string name="close">Sulje</string>
     <string name="delete_current_door_question">Poistetaanko nykyinen ovi?</string>
     <string name="delete_current_door_message">Tämä poistaa valitun oven URL-osoitteen tästä puhelimesta.</string>
     <string name="delete_current_plate_question">Poistetaanko nykyinen rekisterinumero?</string>

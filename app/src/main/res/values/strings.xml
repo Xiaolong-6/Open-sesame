@@ -42,6 +42,12 @@
     <string name="update">UPDATE</string>
     <string name="share">SHARE</string>
     <string name="share_open_sesame">Share Open-Sesame</string>
+    <string name="show_qr_code">Show QR code</string>
+    <string name="share_release_link">Share release link</string>
+    <string name="open_releases_page">Open releases page</string>
+    <string name="release_qr_title">Open-Sesame release</string>
+    <string name="release_qr_body">Scan this code to open the public release page.</string>
+    <string name="close">Close</string>
     <string name="delete_current_door_question">Delete current door?</string>
     <string name="delete_current_door_message">This removes the selected door URL from this phone.</string>
     <string name="delete_current_plate_question">Delete current plate?</string>

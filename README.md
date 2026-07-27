@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.1`
+- App version: `0.4.2`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,11 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.4.2
+
+- Added a share menu with local QR code display for the public release page.
+- Added ZXing QR generation for the release page URL.
 
 ### 0.4.1
 

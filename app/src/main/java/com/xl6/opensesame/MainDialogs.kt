@@ -280,7 +280,7 @@ internal fun MainActivity.showInstructions() {
         setPadding(dp(14), dp(10), dp(14), dp(10))
         setOnClickListener {
             dialog.dismiss()
-            shareReleaseLink()
+            showShareMenu()
         }
     })
 
