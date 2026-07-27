@@ -7,34 +7,28 @@ import android.widget.TextView
 
 internal fun MainActivity.showDoorMenu() {
     val door = activeDoor()
-    val items = arrayOf("Choose door", "Scan new door", "Edit current door", "Delete current door")
-    AlertDialog.Builder(this)
-        .setTitle("Door")
-        .setItems(items) { _, which ->
-            when (which) {
-                0 -> chooseDoorDialog()
-                1 -> scanDoor()
-                2 -> door?.let { editDoorDialog(it) } ?: addDoorDialog(null)
-                3 -> deleteActiveDoor()
-            }
-        }
-        .show()
+    showBottomSheet(
+        title = "Door",
+        actions = listOf(
+            SheetAction("Choose door") { chooseDoorDialog() },
+            SheetAction("Scan new door") { scanDoor() },
+            SheetAction("Edit current door") { door?.let { editDoorDialog(it) } ?: addDoorDialog(null) },
+            SheetAction("Delete current door", destructive = true) { deleteActiveDoor() },
+        )
+    )
 }
 
 internal fun MainActivity.showPlateMenu() {
     val plate = activePlate()
-    val items = arrayOf("Choose vehicle", "Add license plate", "Edit current plate", "Delete current plate")
-    AlertDialog.Builder(this)
-        .setTitle("Vehicle")
-        .setItems(items) { _, which ->
-            when (which) {
-                0 -> choosePlateDialog()
-                1 -> addPlateDialog(null)
-                2 -> plate?.let { addPlateDialog(it) } ?: addPlateDialog(null)
-                3 -> deleteActivePlate()
-            }
-        }
-        .show()
+    showBottomSheet(
+        title = "Vehicle",
+        actions = listOf(
+            SheetAction("Choose vehicle") { choosePlateDialog() },
+            SheetAction("Add license plate") { addPlateDialog(null) },
+            SheetAction("Edit current plate") { plate?.let { addPlateDialog(it) } ?: addPlateDialog(null) },
+            SheetAction("Delete current plate", destructive = true) { deleteActivePlate() },
+        )
+    )
 }
 
 internal fun MainActivity.addDoorDialog(prefillUrl: String?) {

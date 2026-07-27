@@ -31,12 +31,24 @@ fun MainActivity.headerView(onHelp: () -> Unit): LinearLayout {
     }
 }
 
-fun MainActivity.statusBarView(isOpening: Boolean, bindStatusText: (TextView) -> Unit): LinearLayout {
+fun MainActivity.statusBarView(
+    isOpening: Boolean,
+    bindStatusIcon: (StatusIconView) -> Unit,
+    bindStatusText: (TextView) -> Unit
+): LinearLayout {
     return LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
         setPadding(dp(14), dp(10), dp(14), dp(10))
         background = rounded(UiColors.GreenSoft, dp(14))
+
+        val icon = StatusIconView(this@statusBarView).apply {
+            setKind(if (isOpening) StatusKind.Opening else StatusKind.Ready)
+        }
+        bindStatusIcon(icon)
+        addView(icon, LinearLayout.LayoutParams(dp(24), dp(24)).apply {
+            setMargins(0, 0, dp(10), 0)
+        })
 
         val status = TextView(this@statusBarView).apply {
             text = if (isOpening) "Sending request..." else "Ready to open"

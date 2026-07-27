@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
     internal var lastOpenedAt: String? = null
 
     private lateinit var statusText: TextView
+    private lateinit var statusIcon: StatusIconView
     private lateinit var messageText: TextView
     private lateinit var openButton: TextView
 
@@ -101,7 +102,11 @@ class MainActivity : ComponentActivity() {
         setContentView(root)
 
         layout.addView(headerView { showInstructions() })
-        layout.addView(statusBarView(isOpening) { statusText = it }, LinearLayout.LayoutParams(-1, -2).apply {
+        layout.addView(statusBarView(
+            isOpening = isOpening,
+            bindStatusIcon = { statusIcon = it },
+            bindStatusText = { statusText = it },
+        ), LinearLayout.LayoutParams(-1, -2).apply {
             setMargins(0, dp(12), 0, dp(12))
         })
 
@@ -238,6 +243,9 @@ class MainActivity : ComponentActivity() {
             statusText.text = msg
             statusText.setTextColor(color)
         }
+        if (::statusIcon.isInitialized) {
+            statusIcon.setKind(if (color == UiColors.Danger) StatusKind.Error else StatusKind.Ready)
+        }
         if (::openButton.isInitialized) {
             openButton.text = buttonLabel
             openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(18))
@@ -256,6 +264,11 @@ class MainActivity : ComponentActivity() {
         openButton.alpha = if (isOpening) 0.72f else 1f
         statusText.text = status
         statusText.setTextColor(color)
+        statusIcon.setKind(when (color) {
+            UiColors.Danger -> StatusKind.Error
+            UiColors.Warning -> StatusKind.Opening
+            else -> StatusKind.Success
+        })
         messageText.text = status
     }
 
