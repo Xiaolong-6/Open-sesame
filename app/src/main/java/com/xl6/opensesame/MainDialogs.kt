@@ -1,6 +1,13 @@
 package com.xl6.opensesame
 
 import android.app.AlertDialog
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -144,14 +151,16 @@ internal fun MainActivity.chooseDoorDialog() {
         return
     }
 
-    AlertDialog.Builder(this)
-        .setTitle("Choose door")
-        .setItems(doors.map { it.name }.toTypedArray()) { _, which ->
-            store.setActiveDoorId(doors[which].id)
-            reload()
-            render()
+    showBottomSheet(
+        title = "Choose door",
+        actions = doors.map { door ->
+            SheetAction(door.name) {
+                store.setActiveDoorId(door.id)
+                reload()
+                render()
+            }
         }
-        .show()
+    )
 }
 
 internal fun MainActivity.choosePlateDialog() {
@@ -160,14 +169,16 @@ internal fun MainActivity.choosePlateDialog() {
         return
     }
 
-    AlertDialog.Builder(this)
-        .setTitle("Choose vehicle")
-        .setItems(plates.map { it.plateNumber }.toTypedArray()) { _, which ->
-            store.setActivePlateId(plates[which].id)
-            reload()
-            render()
+    showBottomSheet(
+        title = "Choose vehicle",
+        actions = plates.map { plate ->
+            SheetAction(plate.plateNumber) {
+                store.setActivePlateId(plate.id)
+                reload()
+                render()
+            }
         }
-        .show()
+    )
 }
 
 internal fun MainActivity.deleteActiveDoor() {
@@ -203,10 +214,23 @@ internal fun MainActivity.deleteActivePlate() {
 }
 
 internal fun MainActivity.showInstructions() {
+    val dialog = Dialog(this)
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(12), 0, dp(12), 0)
+        setPadding(dp(24), dp(22), dp(24), dp(16))
+        background = rounded(UiColors.Card, dp(18))
     }
+
+    content.addView(TextView(this).apply {
+        text = "Quick opener"
+        textSize = 22f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Text)
+        includeFontPadding = false
+        setPadding(0, 0, 0, dp(12))
+    })
 
     content.addView(TextView(this).apply {
         text = "Save an authorized door and vehicle locally. Tap OPEN DOOR to send the request.\n\nAlways verify the physical door."
@@ -216,26 +240,57 @@ internal fun MainActivity.showInstructions() {
     })
 
     content.addView(TextView(this).apply {
-        text = "v0.3.1-native-lite"
+        text = "v0.3.2"
         textSize = 12f
         setTextColor(UiColors.Muted)
-        gravity = android.view.Gravity.CENTER
-        setPadding(0, dp(16), 0, 0)
+        gravity = Gravity.CENTER
+        setPadding(0, dp(18), 0, dp(12))
         setOnClickListener { unlockDeveloperMode() }
     })
 
-    AlertDialog.Builder(this)
-        .setTitle("Quick opener")
-        .setView(content)
-        .setNegativeButton("Update") { _, _ -> openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") }
-        .setPositiveButton("OK", null)
-        .show()
+    val buttons = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+    }
+
+    buttons.addView(TextView(this).apply {
+        text = "UPDATE"
+        textSize = 14f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Green)
+        gravity = Gravity.CENTER
+        setPadding(dp(14), dp(10), dp(14), dp(10))
+        setOnClickListener {
+            dialog.dismiss()
+            openUrl("https://github.com/Xiaolong-6/Open-sesame/releases")
+        }
+    })
+
+    buttons.addView(TextView(this).apply {
+        text = "OK"
+        textSize = 14f
+        setTypeface(null, Typeface.BOLD)
+        setTextColor(UiColors.Green)
+        gravity = Gravity.CENTER
+        setPadding(dp(14), dp(10), dp(4), dp(10))
+        setOnClickListener { dialog.dismiss() }
+    })
+
+    content.addView(buttons)
+
+    dialog.setContentView(content)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+    dialog.window?.apply {
+        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        setLayout((resources.displayMetrics.widthPixels * 0.86f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
 }
 
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.1-native-lite")
+        appendLine("Version: 0.3.2")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")

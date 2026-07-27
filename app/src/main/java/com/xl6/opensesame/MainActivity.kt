@@ -168,7 +168,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.1"
+            text = "v0.3.2"
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER
@@ -260,9 +260,6 @@ class MainActivity : ComponentActivity() {
             openButton.alpha = if (isOpening) 0.72f else 1f
             openButton.isEnabled = !isOpening
         }
-        if (::messageText.isInitialized) {
-            messageText.text = msg
-        }
     }
 
     private fun updateOpeningUi(buttonLabel: String, color: Int, status: String) {
@@ -277,7 +274,6 @@ class MainActivity : ComponentActivity() {
             UiColors.Warning -> StatusKind.Opening
             else -> StatusKind.Success
         })
-        messageText.text = status
     }
 
     private fun extractAutoparkkiUrl(raw: String): String? {

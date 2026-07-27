@@ -12,7 +12,7 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.3.1-native-lite`
+- App version: `0.3.2`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -109,6 +109,14 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.3.2
+
+- Removed the redundant `-native-lite` suffix from the current app version name.
+- Kept live request state in the top status bar only.
+- Kept the text below the main button for the default hint or last successful open time.
+- Replaced the default help alert with a cleaner custom dialog.
+- Replaced Door and Vehicle picker alerts with matching bottom sheets.
 
 ### 0.3.1-native-lite
 
