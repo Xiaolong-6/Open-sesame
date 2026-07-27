@@ -158,13 +158,13 @@ class MainActivity : ComponentActivity() {
         if (developerMode) {
             layout.addView(advancedSectionView(
                 onDebug = { debugFetch() },
-                onUpdate = { openUrl("https://github.com/Xiaolong-6/Open-sesame/releases") },
+                onUpdate = { openUrl(ReleaseInfo.RELEASES_URL) },
                 onReset = { clearAll() },
             ))
         }
 
         layout.addView(TextView(this).apply {
-            text = "v0.3.8"
+            text = ReleaseInfo.displayVersion
             textSize = 12f
             setTextColor(UiColors.Muted)
             gravity = Gravity.CENTER

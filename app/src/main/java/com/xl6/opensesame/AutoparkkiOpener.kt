@@ -206,7 +206,7 @@ class AutoparkkiOpener {
         conn.connectTimeout = 10000
         conn.readTimeout = 10000
         conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-        conn.setRequestProperty("User-Agent", "Open-Sesame/0.3.8")
+        conn.setRequestProperty("User-Agent", ReleaseInfo.userAgent)
         referer?.let { conn.setRequestProperty("Referer", it) }
 
         val hostCookies = cookies.entries

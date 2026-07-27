@@ -259,7 +259,7 @@ internal fun MainActivity.showInstructions() {
     content.addView(developerModeCheckbox)
 
     content.addView(TextView(this).apply {
-        text = "v0.3.8"
+        text = ReleaseInfo.displayVersion
         textSize = 12f
         setTextColor(UiColors.Muted)
         gravity = Gravity.CENTER
@@ -280,7 +280,7 @@ internal fun MainActivity.showInstructions() {
         setPadding(dp(14), dp(10), dp(14), dp(10))
         setOnClickListener {
             dialog.dismiss()
-            openUrl("https://github.com/Xiaolong-6/Open-sesame/releases")
+            openUrl(ReleaseInfo.RELEASES_URL)
         }
     })
 
@@ -313,7 +313,7 @@ internal fun MainActivity.showInstructions() {
 internal fun MainActivity.debugFetch() {
     val door = activeDoor()
     val baseInfo = buildString {
-        appendLine("Version: 0.3.8")
+        appendLine("Version: ${ReleaseInfo.VERSION_NAME}")
         appendLine("Mode: real opener")
         appendLine("Doors: ${doors.size}")
         appendLine("Plates: ${plates.size}")
