@@ -36,7 +36,7 @@ fun MainActivity.doorSummaryCardView(
     return LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        setPadding(dp(18), dp(20), dp(18), dp(18))
+        setPadding(dp(20), dp(22), dp(20), dp(20))
         background = rounded(UiColors.Card, dp(7))
         elevation = dp(1).toFloat()
         setOnClickListener { onClick() }
@@ -55,26 +55,31 @@ fun MainActivity.doorSummaryCardView(
 
             textBlock.addView(TextView(this@doorSummaryCardView).apply {
                 text = getString(R.string.door)
-                textSize = 13f
+                textSize = if (empty) 15f else 13f
                 setTextColor(UiColors.Muted)
+                setTypeface(null, if (empty) Typeface.BOLD else Typeface.NORMAL)
                 gravity = Gravity.CENTER
                 includeFontPadding = false
             })
 
             textBlock.addView(TextView(this@doorSummaryCardView).apply {
                 text = if (empty) emptyAction else value
-                textSize = 19f
-                setTextColor(if (empty) UiColors.Green else UiColors.Text)
+                textSize = if (empty) 17f else 19f
+                setTextColor(if (empty) Color.WHITE else UiColors.Text)
                 setTypeface(null, Typeface.BOLD)
                 gravity = Gravity.CENTER
                 includeFontPadding = false
                 ellipsize = TextUtils.TruncateAt.END
                 maxLines = 2
                 if (empty) {
-                    background = roundedStroke(UiColors.GreenSoft, UiColors.BorderSoft, dp(4), dp(1))
-                    setPadding(dp(12), dp(12), dp(12), dp(12))
+                    background = rounded(UiColors.Green, dp(4))
+                    setPadding(dp(12), dp(14), dp(12), dp(14))
                 } else {
                     setPadding(0, dp(7), 0, 0)
+                }
+            }, LinearLayout.LayoutParams(-1, -2).apply {
+                if (empty) {
+                    setMargins(0, dp(16), 0, 0)
                 }
             })
 
