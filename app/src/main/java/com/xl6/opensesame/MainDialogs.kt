@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -226,11 +225,12 @@ internal fun MainActivity.deleteActivePlate() {
 internal fun MainActivity.showInstructions() {
     val dialog = Dialog(this)
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    var developerChecked = developerMode
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(24), dp(22), dp(24), dp(16))
-        background = rounded(UiColors.Card, dp(18))
+        setPadding(dp(22), dp(22), dp(22), dp(14))
+        background = rounded(UiColors.Card, dp(20))
     }
 
     content.addView(TextView(this).apply {
@@ -244,75 +244,76 @@ internal fun MainActivity.showInstructions() {
 
     content.addView(TextView(this).apply {
         text = getString(R.string.help_body)
-        textSize = 15f
-        setTextColor(UiColors.Text)
+        textSize = 14f
+        setTextColor(UiColors.Muted)
         setLineSpacing(dp(2).toFloat(), 1.0f)
     })
 
-    val developerModeCheckbox = CheckBox(this).apply {
-        text = getString(R.string.developer_mode)
-        textSize = 14f
-        setTextColor(UiColors.Text)
-        isChecked = developerMode
-        setPadding(0, dp(16), 0, dp(4))
+    val developerCheck = TextView(this)
+    fun updateDeveloperCheck() {
+        developerCheck.text = if (developerChecked) "✓" else ""
+        developerCheck.setTextColor(Color.WHITE)
+        developerCheck.gravity = Gravity.CENTER
+        developerCheck.textSize = 15f
+        developerCheck.setTypeface(null, Typeface.BOLD)
+        developerCheck.background = if (developerChecked) {
+            rounded(UiColors.Green, dp(6))
+        } else {
+            roundedStroke(Color.TRANSPARENT, UiColors.BorderSoft, dp(6), dp(2))
+        }
     }
-    content.addView(developerModeCheckbox)
+    updateDeveloperCheck()
 
-    content.addView(TextView(this).apply {
+    val actionList = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(0, dp(14), 0, dp(8))
+    }
+    actionList.addView(helpActionRow(getString(R.string.share_open_sesame)) {
+        developerMode = developerChecked
+        helpTapCount = 0
+        dialog.dismiss()
+        showShareMenu()
+    })
+    actionList.addView(helpActionRow(getString(R.string.open_releases_page)) {
+        developerMode = developerChecked
+        helpTapCount = 0
+        dialog.dismiss()
+        openUrl(ReleaseInfo.RELEASES_URL)
+    })
+    actionList.addView(helpToggleRow(getString(R.string.developer_mode), developerCheck) {
+        developerChecked = !developerChecked
+        updateDeveloperCheck()
+    })
+    content.addView(actionList)
+
+    val footer = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(0, dp(6), 0, 0)
+    }
+
+    footer.addView(TextView(this).apply {
         text = ReleaseInfo.displayVersion
         textSize = 12f
         setTextColor(UiColors.Muted)
-        gravity = Gravity.CENTER
-        setPadding(0, dp(8), 0, dp(12))
-    })
+        gravity = Gravity.CENTER_VERTICAL
+    }, LinearLayout.LayoutParams(0, -2, 1f))
 
-    val buttons = LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
-    }
-
-    buttons.addView(TextView(this).apply {
-        text = getString(R.string.share)
+    footer.addView(TextView(this).apply {
+        text = getString(R.string.close)
         textSize = 14f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Green)
         gravity = Gravity.CENTER
-        setPadding(dp(14), dp(10), dp(14), dp(10))
+        setPadding(dp(16), dp(10), 0, dp(10))
         setOnClickListener {
-            dialog.dismiss()
-            showShareMenu()
-        }
-    })
-
-    buttons.addView(TextView(this).apply {
-        text = getString(R.string.update)
-        textSize = 14f
-        setTypeface(null, Typeface.BOLD)
-        setTextColor(UiColors.Green)
-        gravity = Gravity.CENTER
-        setPadding(dp(14), dp(10), dp(14), dp(10))
-        setOnClickListener {
-            dialog.dismiss()
-            openUrl(ReleaseInfo.RELEASES_URL)
-        }
-    })
-
-    buttons.addView(TextView(this).apply {
-        text = getString(R.string.ok)
-        textSize = 14f
-        setTypeface(null, Typeface.BOLD)
-        setTextColor(UiColors.Green)
-        gravity = Gravity.CENTER
-        setPadding(dp(14), dp(10), dp(4), dp(10))
-        setOnClickListener {
-            developerMode = developerModeCheckbox.isChecked
+            developerMode = developerChecked
             helpTapCount = 0
             dialog.dismiss()
             render()
         }
     })
-
-    content.addView(buttons)
+    content.addView(footer)
 
     dialog.setContentView(content)
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -320,6 +321,49 @@ internal fun MainActivity.showInstructions() {
     dialog.window?.apply {
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setLayout((resources.displayMetrics.widthPixels * 0.86f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+}
+
+private fun MainActivity.helpActionRow(label: String, onClick: () -> Unit): LinearLayout {
+    return LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(0, dp(12), 0, dp(12))
+        setOnClickListener { onClick() }
+
+        addView(TextView(this@helpActionRow).apply {
+            text = label
+            textSize = 15f
+            setTextColor(UiColors.Text)
+            setTypeface(null, Typeface.BOLD)
+            includeFontPadding = false
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+
+        addView(TextView(this@helpActionRow).apply {
+            text = "›"
+            textSize = 24f
+            setTextColor(UiColors.Muted)
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+        }, LinearLayout.LayoutParams(dp(28), dp(28)))
+    }
+}
+
+private fun MainActivity.helpToggleRow(label: String, checkView: TextView, onClick: () -> Unit): LinearLayout {
+    return LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(0, dp(12), 0, dp(12))
+        setOnClickListener { onClick() }
+
+        addView(TextView(this@helpToggleRow).apply {
+            text = label
+            textSize = 15f
+            setTextColor(UiColors.Text)
+            includeFontPadding = false
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+
+        addView(checkView, LinearLayout.LayoutParams(dp(24), dp(24)))
     }
 }
 
