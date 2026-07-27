@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.4.9`
+- App version: `0.5.0`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,12 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.0
+
+- Reworked the native lite home screen toward the original autoparkki webpage structure with stacked white cards.
+- Moved the live status out of the standalone top status bar and into a quieter information card.
+- Grouped vehicle confirmation and the primary open action into one operation card.
 
 ### 0.4.9
 

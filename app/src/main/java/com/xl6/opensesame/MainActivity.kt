@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -120,16 +118,7 @@ class MainActivity : ComponentActivity() {
 
         bodyScroll.addView(layout, ViewGroup.LayoutParams(-1, -1))
 
-        layout.addView(statusBarView(
-            isOpening = isOpening,
-            bindStatusIcon = { statusIcon = it },
-            bindStatusText = { statusText = it },
-        ), LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, dp(12), 0, dp(12))
-        })
-
-        layout.addView(profileCardView(
-            title = getString(R.string.door),
+        layout.addView(doorSummaryCardView(
             value = activeDoor()?.name ?: getString(R.string.no_door_saved),
             empty = activeDoor() == null,
             emptyAction = getString(R.string.scan_door_qr_code),
@@ -138,41 +127,24 @@ class MainActivity : ComponentActivity() {
             onMenu = { showDoorMenu() },
         ))
 
-        layout.addView(profileCardView(
-            title = getString(R.string.vehicle),
-            value = activePlate()?.plateNumber ?: getString(R.string.no_vehicle_saved),
-            empty = activePlate() == null,
-            emptyAction = getString(R.string.add_license_plate),
-            onClick = { choosePlateDialog() },
-            onAction = { addPlateDialog(null) },
-            onMenu = { showPlateMenu() },
+        layout.addView(openPanelCardView(
+            plateValue = activePlate()?.plateNumber ?: getString(R.string.no_vehicle_saved),
+            plateEmpty = activePlate() == null,
+            isOpening = isOpening,
+            bindOpenButton = { openButton = it },
+            onOpen = { openDoor() },
+            onPlateClick = { choosePlateDialog() },
+            onPlateAction = { addPlateDialog(null) },
+            onPlateMenu = { showPlateMenu() },
         ))
 
-        openButton = TextView(this).apply {
-            text = getString(R.string.open_door)
-            textSize = 24f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
-            setTypeface(null, Typeface.BOLD)
-            background = rounded(UiColors.Green, dp(18))
-            setPadding(dp(10), dp(20), dp(10), dp(20))
-            isEnabled = !isOpening
-            alpha = if (isOpening) 0.72f else 1f
-            setOnClickListener { openDoor() }
-        }
-        layout.addView(openButton, LinearLayout.LayoutParams(-1, -2).apply {
-            setMargins(0, dp(4), 0, dp(10))
-        })
-
-        messageText = TextView(this).apply {
-            text = lastOpenedAt?.let { getString(R.string.last_opened_successfully_at, it) } ?: getString(R.string.scan_once_open_anytime)
-            textSize = 13f
-            setTextColor(UiColors.Muted)
-            gravity = Gravity.CENTER
-            includeFontPadding = false
-            setPadding(dp(6), dp(2), dp(6), dp(8))
-        }
-        layout.addView(messageText)
+        layout.addView(statusInfoCardView(
+            isOpening = isOpening,
+            lastOpenedAt = lastOpenedAt,
+            bindStatusIcon = { statusIcon = it },
+            bindStatusText = { statusText = it },
+            bindMessageText = { messageText = it },
+        ))
 
         layout.addView(TextView(this).apply {
             text = ReleaseInfo.displayVersion
@@ -279,7 +251,7 @@ class MainActivity : ComponentActivity() {
         }
         if (::openButton.isInitialized) {
             openButton.text = buttonLabel
-            openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(18))
+            openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(4))
             openButton.alpha = if (isOpening) 0.72f else 1f
             openButton.isEnabled = !isOpening
         }
@@ -287,7 +259,7 @@ class MainActivity : ComponentActivity() {
 
     private fun updateOpeningUi(buttonLabel: String, color: Int, status: String) {
         openButton.text = buttonLabel
-        openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(18))
+        openButton.background = rounded(if (color == UiColors.Danger) UiColors.Danger else UiColors.Green, dp(4))
         openButton.isEnabled = !isOpening
         openButton.alpha = if (isOpening) 0.72f else 1f
         statusText.text = status

@@ -2,6 +2,7 @@
     <string name="app_name">Open-Sesame</string>
     <string name="door">Door</string>
     <string name="vehicle">Vehicle</string>
+    <string name="registration_number">Enter your registration number</string>
     <string name="no_door_saved">No door saved</string>
     <string name="no_vehicle_saved">No vehicle saved</string>
     <string name="scan_door_qr_code">Scan door QR code</string>
