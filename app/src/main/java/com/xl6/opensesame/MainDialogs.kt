@@ -248,22 +248,17 @@ private fun MainActivity.showProfilePickerDialog(
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(18), dp(12), dp(18), dp(18))
-        background = rounded(UiColors.Card, dp(22))
+        minimumWidth = resources.displayMetrics.widthPixels - dp(64)
+        setPadding(dp(20), dp(20), dp(20), dp(18))
+        background = rounded(UiColors.Card, dp(14))
     }
-
-    content.addView(View(this).apply {
-        background = rounded(UiColors.BorderSoft, dp(3))
-    }, LinearLayout.LayoutParams(dp(42), dp(5)).apply {
-        gravity = Gravity.CENTER_HORIZONTAL
-        setMargins(0, 0, 0, dp(16))
-    })
 
     content.addView(TextView(this).apply {
         text = title
         textSize = 18f
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Text)
+        gravity = Gravity.CENTER
         includeFontPadding = false
         setPadding(0, 0, 0, dp(12))
     })
@@ -310,8 +305,8 @@ private fun MainActivity.showProfilePickerDialog(
     dialog.show()
     dialog.window?.apply {
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        setGravity(Gravity.BOTTOM)
+        setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setGravity(Gravity.CENTER)
     }
 }
 

@@ -10,7 +10,7 @@ The README screenshot is intentionally pending refresh for the next release so t
 
 ## Current version
 
-- App version: `0.5.1`
+- App version: `0.5.2`
 - Android package: `com.xl6.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
@@ -108,6 +108,11 @@ From the command line on Windows:
 ```
 
 ## Changelog
+
+### 0.5.2
+
+- Added more breathing room around the home cards.
+- Changed non-Settings secondary menus from bottom sheets to centered dialogs.
 
 ### 0.5.1
 

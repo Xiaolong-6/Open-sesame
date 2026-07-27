@@ -22,14 +22,10 @@ fun MainActivity.showBottomSheet(title: String, actions: List<SheetAction>) {
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(18), dp(12), dp(18), dp(18))
-        background = rounded(UiColors.Card, dp(24))
+        minimumWidth = resources.displayMetrics.widthPixels - dp(64)
+        setPadding(dp(20), dp(20), dp(20), dp(18))
+        background = rounded(UiColors.Card, dp(14))
     }
-
-    content.addView(ViewGroupHandle(this), LinearLayout.LayoutParams(dp(42), dp(5)).apply {
-        gravity = Gravity.CENTER_HORIZONTAL
-        setMargins(0, 0, 0, dp(16))
-    })
 
     content.addView(TextView(this).apply {
         text = title
@@ -37,7 +33,8 @@ fun MainActivity.showBottomSheet(title: String, actions: List<SheetAction>) {
         setTypeface(null, Typeface.BOLD)
         setTextColor(UiColors.Text)
         includeFontPadding = false
-        setPadding(0, 0, 0, dp(8))
+        gravity = Gravity.CENTER
+        setPadding(0, 0, 0, dp(10))
     })
 
     actions.forEach { item ->
@@ -57,18 +54,12 @@ fun MainActivity.showBottomSheet(title: String, actions: List<SheetAction>) {
     dialog.setContentView(content)
     dialog.window?.apply {
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        setGravity(Gravity.BOTTOM)
+        setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setGravity(Gravity.CENTER)
     }
     dialog.show()
     dialog.window?.apply {
-        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        setGravity(Gravity.BOTTOM)
-    }
-}
-
-private class ViewGroupHandle(context: android.content.Context) : android.view.View(context) {
-    init {
-        background = rounded(UiColors.BorderSoft, context.dp(3))
+        setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setGravity(Gravity.CENTER)
     }
 }

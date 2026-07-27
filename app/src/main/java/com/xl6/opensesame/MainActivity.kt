@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(UiColors.Bg)
             fitsSystemWindows = true
-            setPadding(dp(18), dp(18), dp(18), dp(14))
+            setPadding(dp(22), dp(18), dp(22), dp(14))
         }
 
         setContentView(root)
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(12), 0, dp(6))
+            setPadding(dp(10), dp(12), dp(10), dp(6))
         }
 
         bodyScroll.addView(layout, ViewGroup.LayoutParams(-1, -1))
