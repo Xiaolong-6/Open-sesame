@@ -6,10 +6,10 @@ This file is for coding agents working on Open-Sesame.
 
 - The active Android app is the native Kotlin project at the repository root.
 - Archived implementations live under `archive/` and should not be edited unless the task explicitly targets historical material.
-- The Android package is `com.xl6.opensesame`.
+- The Android package is `com.xldev.opensesame`.
 - Current release metadata is centralized in:
   - `app/build.gradle.kts`
-  - `app/src/main/java/com/xl6/opensesame/ReleaseInfo.kt`
+  - `app/src/main/java/com/xldev/opensesame/ReleaseInfo.kt`
   - `README.md`
 
 ## Non-Negotiables

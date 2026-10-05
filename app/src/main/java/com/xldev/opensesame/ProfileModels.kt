@@ -1,4 +1,4 @@
-package com.xl6.opensesame
+package com.xldev.opensesame
 
 data class DoorProfile(
     val id: String,

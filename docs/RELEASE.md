@@ -9,7 +9,7 @@ Before committing app changes, update:
 - `app/build.gradle.kts`
   - `versionCode`
   - `versionName`
-- `app/src/main/java/com/xl6/opensesame/ReleaseInfo.kt`
+- `app/src/main/java/com/xldev/opensesame/ReleaseInfo.kt`
   - `VERSION_NAME`
 - `README.md`
   - Current version
@@ -75,6 +75,8 @@ Upload only the signed `open-sesame-VERSION-release.apk`.
 
 ## Install Testing
 
+> Since v0.5.9 the application ID is `com.xldev.opensesame`. Android treats builds using the earlier `com.xl6.opensesame` ID as a separate app, so app-private settings do not migrate automatically.
+
 Install on a test phone:
 
 ```powershell
@@ -84,7 +86,7 @@ adb install -r app\build\outputs\apk\release\open-sesame-VERSION-release.apk
 If Android reports `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, the installed app was signed with a different key. Uninstall the old package before installing the release build:
 
 ```powershell
-adb uninstall com.xl6.opensesame
+adb uninstall com.xldev.opensesame
 adb install app\build\outputs\apk\release\open-sesame-VERSION-release.apk
 ```
 

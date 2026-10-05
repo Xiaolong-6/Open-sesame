@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace = "com.xl6.opensesame"
+    namespace = "com.xldev.opensesame"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.xl6.opensesame"
+        applicationId = "com.xldev.opensesame"
         minSdk = 26
         targetSdk = 35
-        versionCode = 32
-        versionName = "0.5.8"
+        versionCode = 33
+        versionName = "0.5.9"
     }
 
     compileOptions {

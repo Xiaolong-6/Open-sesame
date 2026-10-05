@@ -1,4 +1,4 @@
-package com.xl6.opensesame
+package com.xldev.opensesame
 
 import java.net.HttpURLConnection
 import java.net.URL

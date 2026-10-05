@@ -1,4 +1,4 @@
-package com.xl6.opensesame
+package com.xldev.opensesame
 
 import android.Manifest
 import android.content.Context

@@ -19,8 +19,8 @@ The active Android project now lives at the repository root. Earlier Expo / Reac
 
 ## Current version
 
-- App version: `0.5.8`
-- Android package: `com.xl6.opensesame`
+- App version: `0.5.9`
+- Android package: `com.xldev.opensesame`
 - Minimum Android version: Android 8.0, API 26
 - Target SDK: 35
 - Default license plate: none
@@ -127,6 +127,11 @@ From the command line on Windows:
 ## Changelog
 
 See [GitHub Releases](https://github.com/Xiaolong-6/Open-sesame/releases) for version-by-version release notes and APK downloads.
+
+### 0.5.9
+
+- Changed the Android application ID and Kotlin namespace to `com.xldev.opensesame`.
+- Android treats this package as a separate app from earlier `com.xl6.opensesame` builds.
 
 ### 0.5.8
 

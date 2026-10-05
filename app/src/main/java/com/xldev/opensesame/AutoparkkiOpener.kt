@@ -1,4 +1,4 @@
-package com.xl6.opensesame
+package com.xldev.opensesame
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
